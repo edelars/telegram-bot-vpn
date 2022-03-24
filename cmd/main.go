@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	appName = "tg-bot"
+	appName = "backend-vpn"
 	//	fqdnAppName = "tg_bot"
 )
 
