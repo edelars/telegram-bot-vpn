@@ -45,21 +45,29 @@ func (t *tgBot) withHandler(endpoint interface{}, handler func(data transport.Ha
 		return
 	}
 
-	opts := &tele.ReplyMarkup{ResizeKeyboard: true}
+	opts := &tele.ReplyMarkup{ResizeKeyboard: false}
+
+	var buttonsRow []tele.Row
+	var buttons tele.Row
+
 	for _, v := range menu {
 		btn := opts.Data(v.Data())
-		opts.Inline(
-			opts.Row(btn),
-		)
-		t.bot.Handle(&btn, func(c tele.Context) error {
-			data := transport.HandlerData{
-				Username: c.Sender().Username,
-			}
 
-			return c.Send(v.Handler()(data))
-		})
+		if len(buttons) == 2 {
+			buttonsRow = append(buttonsRow, buttons)
+			buttons = nil
+		}
+		buttons = append(buttons, btn)
+
+		t.withMenuHandler(&btn, v)
 	}
 
+	if len(buttons) > 0 {
+		buttonsRow = append(buttonsRow, buttons)
+	}
+	opts.Inline(
+		buttonsRow...,
+	)
 	t.bot.Handle(endpoint, func(c tele.Context) error {
 		data := transport.HandlerData{
 			Username: c.Sender().Username,
@@ -68,6 +76,17 @@ func (t *tgBot) withHandler(endpoint interface{}, handler func(data transport.Ha
 		return c.Send(handler(data), opts)
 	})
 
+}
+
+func (t *tgBot) withMenuHandler(btn *tele.Btn, v transport.MenuI) {
+	t.bot.Handle(btn, func(c tele.Context) error {
+
+		data := transport.HandlerData{
+			Username: c.Sender().Username,
+		}
+		print(v.Data())
+		return c.Send(v.Handler()(data))
+	})
 }
 
 func (t *tgBot) Listen(handlers []transport.HandlerI) (err error) {

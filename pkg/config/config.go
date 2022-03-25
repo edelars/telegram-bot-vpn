@@ -4,6 +4,7 @@ type Environment struct {
 	LogLevel string `long:"log-level" env:"LOG_LEVEL" required:"false" default:"debug"`
 	TgToken  string `long:"tg-token" env:"TG_TOKEN" required:"false" default:"5284896259:AAHOGV3H_46GvzjXEFEzVIf3hXnnw3aNxFo"`
 	MysqlEnvironment
+	BussinesLogic
 }
 
 type MysqlEnvironment struct {
@@ -18,4 +19,10 @@ type MysqlEnvironment struct {
 	//DBMaxConnCount int `long:"db-max-conn" env:"DB_MAX_CONN" required:"false"`
 	// In seconds, <= 0 - unlimited (default)
 	///DBMaxConnLifetime int `long:"db-max-conn-time" env:"DB_MAX_CONN_TIME" required:"false"`
+}
+
+type BussinesLogic struct {
+	Price01 int `long:"price01" env:"PRICE01" required:"false" default:"179"`
+	Price06 int `long:"price06" env:"PRICE06" required:"false" default:"959"`
+	Price12 int `long:"price12" env:"PRICE12" required:"false" default:"1799"`
 }

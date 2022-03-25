@@ -62,7 +62,7 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		errs <- tgBot.Listen(handlers.GetHandlers(ctrl, &logger))
+		errs <- tgBot.Listen(handlers.GetHandlers(ctrl, &logger, env))
 	}()
 
 	logger.Info().Msg("started")

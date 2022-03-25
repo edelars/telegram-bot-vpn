@@ -11,6 +11,7 @@ create table IF NOT EXISTS users
     referal_id varchar(256)                        null,
     invite_referal_id varchar(256)                 null,
     expired_at timestamp                           null,
+    used_test_period bool not null default false,
     primary key (id)
 );
 
