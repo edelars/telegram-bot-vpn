@@ -35,7 +35,7 @@ func NewTgBot(token string, logger zerolog.Logger) *tgBot {
 	}
 }
 
-func (t *tgBot) withHandler(endpoint interface{}, handler func() interface{}, menu []transport.MenuI) {
+func (t *tgBot) withHandler(endpoint interface{}, handler func(data transport.HandlerData) interface{}, menu []transport.MenuI) {
 
 	if t == nil {
 		return
@@ -47,13 +47,25 @@ func (t *tgBot) withHandler(endpoint interface{}, handler func() interface{}, me
 
 	opts := &tele.ReplyMarkup{ResizeKeyboard: true}
 	for _, v := range menu {
+		btn := opts.Data(v.Data())
 		opts.Inline(
-			opts.Row(opts.Data(v.Data())),
+			opts.Row(btn),
 		)
+		t.bot.Handle(&btn, func(c tele.Context) error {
+			data := transport.HandlerData{
+				Username: c.Sender().Username,
+			}
+
+			return c.Send(v.Handler()(data))
+		})
 	}
 
 	t.bot.Handle(endpoint, func(c tele.Context) error {
-		return c.Send(handler(), opts)
+		data := transport.HandlerData{
+			Username: c.Sender().Username,
+		}
+
+		return c.Send(handler(data), opts)
 	})
 
 }

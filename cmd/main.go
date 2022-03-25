@@ -7,12 +7,13 @@ import (
 	"backend-vpn/pkg/transport/handlers"
 	"backend-vpn/pkg/transport/tgbot"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jessevdk/go-flags"
+	"github.com/jmoiron/sqlx"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
-
-	"github.com/jessevdk/go-flags"
 )
 
 const (
@@ -21,8 +22,10 @@ const (
 )
 
 func main() {
-
+	var wg sync.WaitGroup
+	var err error
 	var env config.Environment
+
 	if _, err := flags.Parse(&env); err != nil {
 		panic(err)
 	}
@@ -31,8 +34,18 @@ func main() {
 	//ctx := context.Background()
 	tgBot := tgbot.NewTgBot(env.TgToken, logger)
 
-	var wg sync.WaitGroup
-	var err error
+	logger.Debug().Msgf("connecting to mysql")
+	conStr := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", env.MysqlEnvironment.DBUser, env.MysqlEnvironment.DBPassword, env.MysqlEnvironment.DBHost, env.MysqlEnvironment.DBName)
+	db, err := sqlx.Connect("mysql", conStr)
+	if err != nil {
+		logger.Panic().Err(err).Msg("failed to connect to mysql")
+	}
+	defer func() {
+		if err := db.Close(); err != nil {
+			logger.Error().Err(err).Msg("failed to properly close mysql conn")
+		}
+	}()
+	logger.Debug().Msgf("connected to mysql")
 
 	errs := make(chan error, 4)
 	go waitInterruptSignal(errs)
@@ -41,6 +54,7 @@ func main() {
 	logger.Debug().Msg("configure VPN backend")
 	if err := configure.MainController(
 		ctrl,
+		db,
 	); err != nil {
 		logger.Panic().Err(err).Msg("failed to configure VPN backend")
 	}
@@ -48,7 +62,7 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		errs <- tgBot.Listen(handlers.GetHandlers())
+		errs <- tgBot.Listen(handlers.GetHandlers(ctrl, &logger))
 	}()
 
 	logger.Info().Msg("started")

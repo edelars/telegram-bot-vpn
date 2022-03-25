@@ -13,8 +13,8 @@ func (p *Start) Endpoint() interface{} {
 	return `/start`
 }
 
-func (p *Start) Handler() func() interface{} {
-	return func() interface{} { return "blah" }
+func (p *Start) Handler() func(data transport.HandlerData) interface{} {
+	return func(data transport.HandlerData) interface{} { return "blah" }
 }
 
 func (p *Start) Menu() []transport.MenuI {
