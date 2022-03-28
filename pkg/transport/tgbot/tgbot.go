@@ -72,6 +72,8 @@ func (t *tgBot) withHandler(endpoint interface{}, handler func(data transport.Ha
 	t.bot.Handle(endpoint, func(c tele.Context) error {
 		data := transport.HandlerData{
 			Username: c.Sender().Username,
+			Message:  c.Text(),
+			Id:       c.Sender().ID,
 		}
 
 		return c.Send(handler(data), opts)

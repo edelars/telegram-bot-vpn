@@ -23,8 +23,13 @@ start() {
 
   export DB_HOST=127.0.0.1
   export DB_NAME=vpn
-  export DB_USER=vpn
-  export DB_PASS=asdas
+  export DB_USER=root
+  export DB_PASS=cnbhrf
+
+  export DB_HOST_SW=127.0.0.1
+  export DB_NAME_SW=swan
+  export DB_USER_SW=root
+  export DB_PASS_SW=cnbhrf
 
   local CMD="$SCRIPT &> \"$LOGFILE\" & echo \$!"
   su -c "$CMD" $RUNAS > "$PIDFILE"

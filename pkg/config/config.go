@@ -5,6 +5,7 @@ type Environment struct {
 	TgToken  string `long:"tg-token" env:"TG_TOKEN" required:"false" default:"5284896259:AAHOGV3H_46GvzjXEFEzVIf3hXnnw3aNxFo"`
 	MysqlEnvironment
 	BussinesLogic
+	Admins string `long:"admins" env:"ADMINS" required:"true" default:"221953723"`
 }
 
 type MysqlEnvironment struct {
@@ -19,11 +20,11 @@ type MysqlEnvironment struct {
 	//DBMaxConnCount int `long:"db-max-conn" env:"DB_MAX_CONN" required:"false"`
 	// In seconds, <= 0 - unlimited (default)
 	///DBMaxConnLifetime int `long:"db-max-conn-time" env:"DB_MAX_CONN_TIME" required:"false"`
-	DBHostSW string `long:"db-host" env:"DB_HOST_SW" required:"true"`
+	DBHostSW string `long:"db-host-sw" env:"DB_HOST_SW" required:"true"`
 	//DBPort     int    `long:"db-port" env:"DB_PORT" required:"true"`
-	DBNameSW     string `long:"db-name" env:"DB_NAME_SW" required:"true"`
-	DBUserSW     string `long:"db-user" env:"DB_USER_SW" required:"true"`
-	DBPasswordSW string `long:"db-pass" env:"DB_PASS_SW" required:"true"`
+	DBNameSW     string `long:"db-name-sw" env:"DB_NAME_SW" required:"true"`
+	DBUserSW     string `long:"db-user-sw" env:"DB_USER_SW" required:"true"`
+	DBPasswordSW string `long:"db-pass-sw" env:"DB_PASS_SW" required:"true"`
 }
 
 type BussinesLogic struct {

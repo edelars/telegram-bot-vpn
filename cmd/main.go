@@ -68,6 +68,7 @@ func main() {
 		ctrl,
 		mainDb,
 		swanDb,
+		env,
 	); err != nil {
 		logger.Panic().Err(err).Msg("failed to configure VPN backend")
 	}
