@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	timeout = 10 * time.Second
+	timeout     = 10 * time.Second
+	buttonInRow = 2
 )
 
 type tgBot struct {
@@ -53,7 +54,7 @@ func (t *tgBot) withHandler(endpoint interface{}, handler func(data transport.Ha
 	for _, v := range menu {
 		btn := opts.Data(v.Data())
 
-		if len(buttons) == 2 {
+		if len(buttons) == buttonInRow {
 			buttonsRow = append(buttonsRow, buttons)
 			buttons = nil
 		}

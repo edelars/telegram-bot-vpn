@@ -18,7 +18,6 @@ import (
 
 const (
 	appName = "backend-vpn"
-	//	fqdnAppName = "tg_bot"
 )
 
 func main() {
@@ -34,18 +33,31 @@ func main() {
 	//ctx := context.Background()
 	tgBot := tgbot.NewTgBot(env.TgToken, logger)
 
-	logger.Debug().Msgf("connecting to mysql")
-	conStr := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", env.MysqlEnvironment.DBUser, env.MysqlEnvironment.DBPassword, env.MysqlEnvironment.DBHost, env.MysqlEnvironment.DBName)
-	db, err := sqlx.Connect("mysql", conStr)
+	logger.Debug().Msgf("connecting to main mysql")
+	conStrMain := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", env.MysqlEnvironment.DBUser, env.MysqlEnvironment.DBPassword, env.MysqlEnvironment.DBHost, env.MysqlEnvironment.DBName)
+	mainDb, err := sqlx.Connect("mysql", conStrMain)
 	if err != nil {
-		logger.Panic().Err(err).Msg("failed to connect to mysql")
+		logger.Panic().Err(err).Msg("failed to connect to main mysql")
 	}
 	defer func() {
-		if err := db.Close(); err != nil {
-			logger.Error().Err(err).Msg("failed to properly close mysql conn")
+		if err := mainDb.Close(); err != nil {
+			logger.Error().Err(err).Msg("failed to properly close main mysql conn")
 		}
 	}()
-	logger.Debug().Msgf("connected to mysql")
+	logger.Debug().Msgf("connected to main mysql")
+
+	logger.Debug().Msgf("connecting to strongswan mysql")
+	conStrSw := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", env.MysqlEnvironment.DBUserSW, env.MysqlEnvironment.DBPasswordSW, env.MysqlEnvironment.DBHostSW, env.MysqlEnvironment.DBNameSW)
+	swanDb, err := sqlx.Connect("mysql", conStrSw)
+	if err != nil {
+		logger.Panic().Err(err).Msg("failed to connect to strongswan mysql")
+	}
+	defer func() {
+		if err := mainDb.Close(); err != nil {
+			logger.Error().Err(err).Msg("failed to properly close strongswan mysql conn")
+		}
+	}()
+	logger.Debug().Msgf("connected to strongswan mysql")
 
 	errs := make(chan error, 4)
 	go waitInterruptSignal(errs)
@@ -54,11 +66,13 @@ func main() {
 	logger.Debug().Msg("configure VPN backend")
 	if err := configure.MainController(
 		ctrl,
-		db,
+		mainDb,
+		swanDb,
 	); err != nil {
 		logger.Panic().Err(err).Msg("failed to configure VPN backend")
 	}
 
+	logger.Info().Msg("starting telegram bot #1")
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
