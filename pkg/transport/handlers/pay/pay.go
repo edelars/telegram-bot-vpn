@@ -27,7 +27,7 @@ func (p *Pay) Data() (text, unique string) {
 func (p *Pay) Handler() func(data transport.HandlerData) interface{} {
 	return func(data transport.HandlerData) interface{} {
 
-		u := storage.NewUserQuery(data.Username, "")
+		u := storage.NewUserQuery(data.Id, "")
 
 		if err := p.ctrl.Exec(context.Background(), u); err != nil {
 			p.logger.Debug().Err(err).Msg("fail")

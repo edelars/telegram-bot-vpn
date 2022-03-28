@@ -2,6 +2,7 @@ package storage
 
 import (
 	"backend-vpn/internal/dto"
+	"strconv"
 )
 
 type UserQuery struct {
@@ -13,12 +14,12 @@ type UserQuery struct {
 	}
 }
 
-func NewUserQuery(login, referalId string) *UserQuery {
+func NewUserQuery(id int64, referalId string) *UserQuery {
 
 	u := &dto.User{}
 
 	uq := &UserQuery{
-		login:     login,
+		login:     strconv.FormatInt(id, 10),
 		referalId: referalId,
 		Out: struct {
 			User    *dto.User

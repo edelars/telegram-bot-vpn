@@ -18,7 +18,7 @@ type MysqlEnvironment struct {
 	//DBMaxIdleConnCount int `long:"db-max-idle" env:"DB_MAX_IDLE" required:"false" default:"2"`
 	// <= 0 - unlimited (default)
 	//DBMaxConnCount int `long:"db-max-conn" env:"DB_MAX_CONN" required:"false"`
-	// In seconds, <= 0 - unlimited (default)
+	// In seconds, <= 0 - unlimited (default)  5212629202:AAEDdzItq_3pcp2V1Yq8L8KSIkEIGvaDcH0
 	///DBMaxConnLifetime int `long:"db-max-conn-time" env:"DB_MAX_CONN_TIME" required:"false"`
 	DBHostSW string `long:"db-host-sw" env:"DB_HOST_SW" required:"true"`
 	//DBPort     int    `long:"db-port" env:"DB_PORT" required:"true"`

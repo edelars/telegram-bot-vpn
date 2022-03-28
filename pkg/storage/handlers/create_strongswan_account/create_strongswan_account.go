@@ -32,7 +32,7 @@ func (h CreateStrongswanAccountHandler) Exec(ctx context.Context, args *storage.
 
 	// 1
 	sqlQuery := `insert into identities (type, data) VALUES (?,?);`
-	res, err = tx.Exec(sqlQuery, 2, args.User.GetEncodedLogin())
+	res, err = tx.Exec(sqlQuery, 2, args.User.GetLogin())
 	if err != nil {
 		_ = tx.Rollback()
 		return fmt.Errorf("failed to insert user %s: %w", args.User.GetLogin(), err)
@@ -45,7 +45,7 @@ func (h CreateStrongswanAccountHandler) Exec(ctx context.Context, args *storage.
 
 	//2
 	sqlQuery2 := "insert into shared_secrets (type,data) VALUES (?,?);"
-	res, err = tx.Exec(sqlQuery2, 2, args.User.GetEncodedPassword())
+	res, err = tx.Exec(sqlQuery2, 2, args.User.GetPassword())
 	if err != nil {
 		_ = tx.Rollback()
 		return fmt.Errorf("failed to insert user %s: %w", args.User.GetLogin(), err)

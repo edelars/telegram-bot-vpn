@@ -53,7 +53,7 @@ func (a *StrongswanUser) GetPassword() string {
 
 func (a *StrongswanUser) encode(s string) string {
 	hx := hex.EncodeToString([]byte(s))
-	return fmt.Sprintf("X'%s'", hx)
+	return fmt.Sprintf("%s", hx)
 }
 
 func (a *StrongswanUser) generateNewPassword() string {

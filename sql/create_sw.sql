@@ -7,7 +7,10 @@ insert into shared_secret_identity (shared_secret, identity) VALUES (@last_id_in
 
 select * from shared_secret_identity;
 
-select id from identities where data = "aasd";
+select * from identities;
 
 select * from shared_secrets;
-select shared_secret from shared_secret_identity where identity = 1;
+select * from shared_secret_identity ;
+
+0x582737343639366436313631373336343733363427
+0x582737343639366436313631373336343733363427
