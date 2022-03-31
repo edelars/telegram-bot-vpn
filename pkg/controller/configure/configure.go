@@ -19,7 +19,7 @@ func MainController(ctrl *controller.ControllerImpl, mainDb *sqlx.DB, swDb *sqlx
 	}
 
 	propogateErr(ctrl.RegisterHandler(get_create_update_user.NewGetCreateUpdateUserHandler(mainDb)))
-	propogateErr(ctrl.RegisterHandler(create_strongswan_account.NewCreateStrongswanAccountHandler(swDb)))
+	propogateErr(ctrl.RegisterHandler(create_strongswan_account.NewCreateStrongswanAccountHandler(swDb, env)))
 	propogateErr(ctrl.RegisterHandler(delete_strongswan_account.NewDeleteStrongswanAccountHandler(swDb)))
 	propogateErr(ctrl.RegisterHandler(access_right.NewAccessRightHandlerHandler(env)))
 

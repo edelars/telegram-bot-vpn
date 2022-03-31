@@ -5,7 +5,8 @@ type Environment struct {
 	TgToken  string `long:"tg-token" env:"TG_TOKEN" required:"false" default:"5284896259:AAHOGV3H_46GvzjXEFEzVIf3hXnnw3aNxFo"`
 	MysqlEnvironment
 	BussinesLogic
-	Admins string `long:"admins" env:"ADMINS" required:"true" default:"221953723"`
+	Admins       string `long:"admins" env:"ADMINS" required:"true" default:"221953723"`
+	OurServersIP string `long:"servers-sp" env:"SERVERS_IP" required:"true" default:"65.108.96.44"`
 }
 
 type MysqlEnvironment struct {
