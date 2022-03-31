@@ -7,6 +7,7 @@ type Environment struct {
 	BussinesLogic
 	Admins       string `long:"admins" env:"ADMINS" required:"true" default:"221953723"`
 	OurServersIP string `long:"servers-sp" env:"SERVERS_IP" required:"true" default:"65.108.96.44"`
+	Psk          string `long:"psk" env:"PSK" required:"true" default:"m9z6v3"`
 }
 
 type MysqlEnvironment struct {

@@ -13,6 +13,10 @@ type DeleteStrongswanAccountHandler struct {
 	db *sqlx.DB
 }
 
+var (
+	ErrNotExist = errors.New("no such user")
+)
+
 func NewDeleteStrongswanAccountHandler(db *sqlx.DB) *DeleteStrongswanAccountHandler {
 	return &DeleteStrongswanAccountHandler{db: db}
 }
@@ -50,7 +54,7 @@ func (h DeleteStrongswanAccountHandler) Exec(ctx context.Context, args *storage.
 	} else {
 		rows.Close()
 		_ = tx.Rollback()
-		return errors.New("no such user")
+		return ErrNotExist
 	}
 
 	//2 delete identities
@@ -64,8 +68,8 @@ func (h DeleteStrongswanAccountHandler) Exec(ctx context.Context, args *storage.
 	print(res.RowsAffected())
 
 	//3.1  get shared_secret id
-	sqlQuery4 := "select shared_secret   from shared_secret_identity where identity= ?;"
-	rows3, err = tx.Queryx(sqlQuery4, identitiesId)
+	sqlQuery3 := "select shared_secret   from shared_secret_identity where identity= ?;"
+	rows3, err = tx.Queryx(sqlQuery3, identitiesId)
 	if err != nil {
 		_ = tx.Rollback()
 		return fmt.Errorf("failed to get shared_secret user %s: %w", args.User.GetLogin(), err)
@@ -81,8 +85,8 @@ func (h DeleteStrongswanAccountHandler) Exec(ctx context.Context, args *storage.
 	}
 
 	//3 get identity id
-	sqlQuery3 := "select identity  from shared_secret_identity where shared_secret= ?;" //shared_secret
-	rows2, err = tx.Queryx(sqlQuery3, sharedSecretId)
+	sqlQuery4 := "select identity  from shared_secret_identity where shared_secret= ?;" //shared_secret
+	rows2, err = tx.Queryx(sqlQuery4, sharedSecretId)
 	if err != nil {
 		_ = tx.Rollback()
 		return fmt.Errorf("failed to get identity shared_secret user %s: %w", args.User.GetLogin(), err)
@@ -100,17 +104,16 @@ func (h DeleteStrongswanAccountHandler) Exec(ctx context.Context, args *storage.
 	}
 
 	//4 delete shared_secret_identity
-
 	sqlQuery5, argss, err := sqlx.In("delete from shared_secret_identity  where identity in (?) AND shared_secret=?", identitySrr, sharedSecretId)
 	sqlQuery5 = h.db.Rebind(sqlQuery5)
 	if err != nil {
 		_ = tx.Rollback()
-		return fmt.Errorf("failed to delete user shared_secret %s: %w", args.User.GetLogin(), err)
+		return fmt.Errorf("failed to delete user shared_secret_identity %s: %w", args.User.GetLogin(), err)
 	}
 	_, err = tx.Exec(sqlQuery5, argss...)
 	if err != nil {
 		_ = tx.Rollback()
-		return fmt.Errorf("failed to delete user shared_secret %s: %w", args.User.GetLogin(), err)
+		return fmt.Errorf("failed to delete user shared_secret_identity %s: %w", args.User.GetLogin(), err)
 	}
 
 	//5 delete shared_secret
@@ -118,7 +121,7 @@ func (h DeleteStrongswanAccountHandler) Exec(ctx context.Context, args *storage.
 	_, err = tx.Exec(sqlQuery6, identitiesId)
 	if err != nil {
 		_ = tx.Rollback()
-		return fmt.Errorf("failed to delete user shared_secret_identity %s: %w", args.User.GetLogin(), err)
+		return fmt.Errorf("failed to delete user shared_secret by identity %s: %w", args.User.GetLogin(), err)
 	}
 	err = tx.Commit()
 	if err != nil {

@@ -1,6 +1,7 @@
 package get_create_update_user
 
 import (
+	"backend-vpn/pkg/config"
 	"backend-vpn/pkg/storage"
 	"context"
 	"database/sql"
@@ -15,19 +16,22 @@ var (
 )
 
 type GetCreateUpdateUser struct {
-	Id              sql.NullInt64  `db:"id"`
+	Id              sql.NullInt64  `db:"tg_id"`
 	CreatedAt       sql.NullTime   `db:"created_at"`
 	ReferalId       sql.NullString `db:"referal_id"`
 	ExpiredAt       sql.NullTime   `db:"expired_at"`
 	InviteReferalId sql.NullString `db:"invite_referal_id"`
+	Login           sql.NullString `db:"tg_login"`
+	Password        sql.NullString `db:"password"`
 }
 
 type GetCreateUpdateUserHandler struct {
-	db *sqlx.DB
+	db  *sqlx.DB
+	env config.Environment
 }
 
-func NewGetCreateUpdateUserHandler(db *sqlx.DB) *GetCreateUpdateUserHandler {
-	return &GetCreateUpdateUserHandler{db: db}
+func NewGetCreateUpdateUserHandler(db *sqlx.DB, env config.Environment) *GetCreateUpdateUserHandler {
+	return &GetCreateUpdateUserHandler{db: db, env: env}
 }
 
 func (h GetCreateUpdateUserHandler) Exec(ctx context.Context, args *storage.UserQuery) (err error) {
@@ -37,21 +41,21 @@ func (h GetCreateUpdateUserHandler) Exec(ctx context.Context, args *storage.User
 		return fmt.Errorf("user login in query not set")
 	}
 
-	tx, err := h.db.BeginTxx(ctx, &sql.TxOptions{Isolation: sql.LevelDefault})
+	tx, err := h.db.BeginTxx(ctx, &sql.TxOptions{Isolation: sql.LevelRepeatableRead})
 	if err != nil {
 		return err
 	}
 
 	var p GetCreateUpdateUser
 
-	err = get(tx, &p, userLogin)
+	err = get(tx, &p, args.GetId())
 	switch err {
 	case errNotExist:
-		if err = create(tx, &p, userLogin, args.GetReferalId()); err != nil {
+		if err = create(tx, &p, userLogin, args.GetId(), args.GetNewReferalId(), args.GetInviteReferalId()); err != nil {
 			_ = tx.Rollback()
 			return err
 		}
-		if err = get(tx, &p, userLogin); err != nil {
+		if err = get(tx, &p, args.GetId()); err != nil {
 			_ = tx.Rollback()
 			return err
 		}
@@ -78,17 +82,25 @@ func (h GetCreateUpdateUserHandler) Exec(ctx context.Context, args *storage.User
 	if p.ReferalId.Valid {
 		args.Out.User.ReferalId = p.ReferalId.String
 	}
+	if p.Id.Valid {
+		args.Out.User.Id = p.Id.Int64
+	}
+	if p.Password.Valid {
+		args.Out.User.Password = p.Password.String
+	}
+	args.Out.User.Psk = h.env.Psk
+
 	return nil
 }
 
-func get(tx *sqlx.Tx, p *GetCreateUpdateUser, userLogin string) (err error) {
+func get(tx *sqlx.Tx, p *GetCreateUpdateUser, tgId int64) (err error) {
 	var rows *sqlx.Rows
 
-	sqlQuery := `select id,created_at,referal_id,expired_at,invite_referal_id from users where tg_login = ?`
+	sqlQuery := `select tg_id, tg_login,created_at,referal_id,expired_at,invite_referal_id from users where tg_id = ?`
 
-	rows, err = tx.QueryxContext(context.Background(), sqlQuery, userLogin)
+	rows, err = tx.QueryxContext(context.Background(), sqlQuery, tgId)
 	if err != nil {
-		return fmt.Errorf("failed to query user %s: %w", userLogin, err)
+		return fmt.Errorf("failed to query user %s: %w", tgId, err)
 	}
 	defer rows.Close()
 	if rows.Next() {
@@ -99,14 +111,14 @@ func get(tx *sqlx.Tx, p *GetCreateUpdateUser, userLogin string) (err error) {
 	return nil
 }
 
-func create(tx *sqlx.Tx, p *GetCreateUpdateUser, userLogin, referalId string) (err error) {
+func create(tx *sqlx.Tx, p *GetCreateUpdateUser, userLogin string, tgId int64, referalId, invite_referal_id string) (err error) {
 	var rows *sqlx.Rows
 
-	sqlQuery := `insert into users (created_at, tg_login, referal_id, expired_at, invite_referal_id) VALUES (default,?,?,?,null);`
+	sqlQuery := `insert into users (created_at, tg_login, referal_id, expired_at, invite_referal_id,tg_id) VALUES (?,?,?,?,?,?);`
 
-	rows, err = tx.Queryx(sqlQuery, userLogin, referalId, time.Now())
+	rows, err = tx.Queryx(sqlQuery, time.Now(), userLogin, referalId, time.Now(), invite_referal_id, tgId)
 	if err != nil {
-		return fmt.Errorf("failed to query user %s: %w", userLogin, err)
+		return fmt.Errorf("failed to create user %s: %w", userLogin, err)
 	}
 	defer rows.Close()
 

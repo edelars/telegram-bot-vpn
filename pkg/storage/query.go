@@ -2,24 +2,30 @@ package storage
 
 import (
 	"backend-vpn/internal/dto"
-	"strconv"
+	"errors"
+	"math/rand"
+	"strings"
+	"time"
 )
 
 type UserQuery struct {
 	login     string
+	tg_id     int64
 	referalId string
+	inviteid  string
 	Out       struct {
 		User    *dto.User
 		Created bool
 	}
 }
 
-func NewUserQuery(id int64, referalId string) *UserQuery {
+func NewUserQuery(login string, id int64, referalId string) *UserQuery {
 
 	u := &dto.User{}
 
 	uq := &UserQuery{
-		login:     strconv.FormatInt(id, 10),
+		login:     login,
+		tg_id:     id,
 		referalId: referalId,
 		Out: struct {
 			User    *dto.User
@@ -34,8 +40,50 @@ func (u *UserQuery) GetLogin() string {
 	return u.login
 }
 
+func (u *UserQuery) GetId() int64 {
+	return u.tg_id
+}
 func (u *UserQuery) GetReferalId() string {
+	return u.inviteid
+}
+
+func (u *UserQuery) GetNewReferalId() string {
+	rand.Seed(time.Now().UnixNano())
+	chars := []rune("abcdefghijklmnopqrstuvwxyz" +
+		"0123456789")
+	length := 6
+	var b strings.Builder
+	for i := 0; i < length; i++ {
+		b.WriteRune(chars[rand.Intn(len(chars))])
+	}
+	u.inviteid = b.String()
+
+	return u.inviteid
+}
+func (u *UserQuery) GetInviteReferalId() string {
 	return u.referalId
+}
+
+type SaveUserQuery struct {
+	user *dto.User
+}
+
+func NewSaveUserQuery(user *dto.User) (err error, u *SaveUserQuery) {
+	if user == nil {
+		return errors.New("user is nil"), u
+	}
+	if user.Login == "" {
+		return errors.New("login is nil"), u
+	}
+	if user.Password == "" {
+		return errors.New("pass is nil"), u
+	}
+
+	return err, &SaveUserQuery{user: user}
+}
+
+func (h *SaveUserQuery) GetUser() *dto.User {
+	return h.user
 }
 
 type CreateStrongswanAccount struct {

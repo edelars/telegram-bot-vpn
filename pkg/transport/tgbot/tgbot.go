@@ -86,6 +86,7 @@ func (t *tgBot) withMenuHandler(btn *tele.Btn, v transport.MenuI) {
 
 		data := transport.HandlerData{
 			Username: c.Sender().Username,
+			Id:       c.Sender().ID,
 		}
 		print(v.Data())
 		return c.Send(v.Handler()(data))
