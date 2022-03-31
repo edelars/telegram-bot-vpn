@@ -17,7 +17,7 @@ func NewPostPayedHandler(ctrl controller.Controller, logger *zerolog.Logger) *Po
 }
 
 func (h PostPayedHandler) Handle(params operations.PostPayedParams) middleware.Responder {
-	ctx := params.HTTPRequest.Context()
+	//ctx := params.HTTPRequest.Context()
 
 	//cmd := &deployProject.DeployProjectAsync{
 	//	ID:               params.ProjectID,

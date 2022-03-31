@@ -75,11 +75,10 @@ func main() {
 		logger.Panic().Err(err).Msg("failed to configure VPN backend")
 	}
 
-	serverHttp, err := http.NewServer("", env.HttpPort, ctrl)
+	serverHttp, err := http.NewServer("", env.HttpPort, ctrl, &logger)
 	if err != nil {
 		logger.Panic().Err(err).Msg("unable to create http server")
 	}
-	logger.Debug().Msgf("New hhtp Server")
 
 	logger.Info().Msg("starting telegram bot #1")
 	wg.Add(1)

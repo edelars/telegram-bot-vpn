@@ -25,6 +25,21 @@ func init() {
     "version": "0.0.0"
   },
   "paths": {
+    "/notify": {
+      "post": {
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "responses": {
+          "200": {
+            "description": "Deployment scheduled."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
     "/payed": {
       "post": {
         "consumes": [
@@ -86,6 +101,21 @@ func init() {
           }
         }
       }
+    },
+    "/tryagain": {
+      "post": {
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "responses": {
+          "200": {
+            "description": "Deployment scheduled."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
     }
   }
 }`))
@@ -97,6 +127,21 @@ func init() {
     "version": "0.0.0"
   },
   "paths": {
+    "/notify": {
+      "post": {
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "responses": {
+          "200": {
+            "description": "Deployment scheduled."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
     "/payed": {
       "post": {
         "consumes": [
@@ -148,6 +193,21 @@ func init() {
             "name": "SIGN",
             "in": "formData"
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deployment scheduled."
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
+    "/tryagain": {
+      "post": {
+        "consumes": [
+          "multipart/form-data"
         ],
         "responses": {
           "200": {

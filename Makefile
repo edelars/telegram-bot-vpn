@@ -18,3 +18,6 @@ build:
 
 install:
 	sudo cp ./${BUILD_DIR}/${APP} /usr/local/sbin/${APP}
+
+clean:
+	rm ./${BUILD_DIR}/${APP} && rm  ./${BUILD_DIR}

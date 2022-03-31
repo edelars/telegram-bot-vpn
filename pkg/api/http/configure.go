@@ -7,9 +7,10 @@ import (
 	"backend-vpn/pkg/controller"
 	"github.com/go-openapi/loads"
 	"github.com/go-openapi/runtime"
+	"github.com/rs/zerolog"
 )
 
-func NewServer(host string, port int, ctrl controller.Controller) (*restapi.Server, error) {
+func NewServer(host string, port int, ctrl controller.Controller, logger *zerolog.Logger) (*restapi.Server, error) {
 	spec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)
 	if err != nil {
 		return nil, err
@@ -23,7 +24,9 @@ func NewServer(host string, port int, ctrl controller.Controller) (*restapi.Serv
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	api.PostPayedHandler = handlers.NewPostPayedHandler(ctrl)
+	api.PostPayedHandler = handlers.NewPostPayedHandler(ctrl, logger)
+	api.PostNotifyHandler = handlers.NewNotifyHandler(ctrl, logger)
+	api.PostTryagainHandler = handlers.NewTryAgainHandler(ctrl, logger)
 
 	api.ServerShutdown = func() {}
 

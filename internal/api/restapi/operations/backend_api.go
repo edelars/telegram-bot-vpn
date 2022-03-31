@@ -42,8 +42,14 @@ func NewBackendAPI(spec *loads.Document) *BackendAPI {
 
 		JSONProducer: runtime.JSONProducer(),
 
+		PostNotifyHandler: PostNotifyHandlerFunc(func(params PostNotifyParams) middleware.Responder {
+			return middleware.NotImplemented("operation PostNotify has not yet been implemented")
+		}),
 		PostPayedHandler: PostPayedHandlerFunc(func(params PostPayedParams) middleware.Responder {
 			return middleware.NotImplemented("operation PostPayed has not yet been implemented")
+		}),
+		PostTryagainHandler: PostTryagainHandlerFunc(func(params PostTryagainParams) middleware.Responder {
+			return middleware.NotImplemented("operation PostTryagain has not yet been implemented")
 		}),
 	}
 }
@@ -81,8 +87,12 @@ type BackendAPI struct {
 	//   - application/json
 	JSONProducer runtime.Producer
 
+	// PostNotifyHandler sets the operation handler for the post notify operation
+	PostNotifyHandler PostNotifyHandler
 	// PostPayedHandler sets the operation handler for the post payed operation
 	PostPayedHandler PostPayedHandler
+	// PostTryagainHandler sets the operation handler for the post tryagain operation
+	PostTryagainHandler PostTryagainHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -160,8 +170,14 @@ func (o *BackendAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
+	if o.PostNotifyHandler == nil {
+		unregistered = append(unregistered, "PostNotifyHandler")
+	}
 	if o.PostPayedHandler == nil {
 		unregistered = append(unregistered, "PostPayedHandler")
+	}
+	if o.PostTryagainHandler == nil {
+		unregistered = append(unregistered, "PostTryagainHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -254,7 +270,15 @@ func (o *BackendAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
+	o.handlers["POST"]["/notify"] = NewPostNotify(o.context, o.PostNotifyHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
 	o.handlers["POST"]["/payed"] = NewPostPayed(o.context, o.PostPayedHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/tryagain"] = NewPostTryagain(o.context, o.PostTryagainHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP
