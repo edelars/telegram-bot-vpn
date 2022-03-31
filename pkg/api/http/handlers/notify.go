@@ -18,5 +18,6 @@ func NewNotifyHandler(ctrl controller.Controller, logger *zerolog.Logger) *Notif
 
 func (h NotifyHandler) Handle(params operations.PostNotifyParams) middleware.Responder {
 
+	h.logger.Debug().Msgf("NotifyHandler %s", params)
 	return operations.NewPostNotifyOK()
 }

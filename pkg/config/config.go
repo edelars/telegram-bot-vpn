@@ -35,3 +35,6 @@ type BussinesLogic struct {
 	Price06 int `long:"price06" env:"PRICE06" required:"false" default:"959"`
 	Price12 int `long:"price12" env:"PRICE12" required:"false" default:"1799"`
 }
+
+//}fTNqXgQ*KHssO{ key1
+//	?RL[Jz4r(P,*H_{ key2
