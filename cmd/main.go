@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend-vpn/pkg/api/http"
 	"backend-vpn/pkg/config"
 	"backend-vpn/pkg/controller"
 	"backend-vpn/pkg/controller/configure"
@@ -74,11 +75,23 @@ func main() {
 		logger.Panic().Err(err).Msg("failed to configure VPN backend")
 	}
 
+	serverHttp, err := http.NewServer("", env.HttpPort, ctrl)
+	if err != nil {
+		logger.Panic().Err(err).Msg("unable to create http server")
+	}
+	logger.Debug().Msgf("New hhtp Server")
+
 	logger.Info().Msg("starting telegram bot #1")
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		errs <- tgBot.Listen(handlers.GetHandlers(ctrl, &logger, env))
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		errs <- serverHttp.Serve()
 	}()
 
 	logger.Info().Msg("started")
@@ -88,9 +101,17 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
+		err := serverHttp.Shutdown()
+		logger.Err(err).Msg("http server stopped")
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		err := tgBot.Shutdown()
 		logger.Err(err).Msg("telegram bot stopped")
 	}()
+
 }
 
 func waitInterruptSignal(errs chan<- error) {

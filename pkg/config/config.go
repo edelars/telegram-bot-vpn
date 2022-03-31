@@ -8,6 +8,7 @@ type Environment struct {
 	Admins       string `long:"admins" env:"ADMINS" required:"true" default:"221953723"`
 	OurServersIP string `long:"servers-sp" env:"SERVERS_IP" required:"true" default:"65.108.96.44"`
 	Psk          string `long:"psk" env:"PSK" required:"true" default:"m9z6v3"`
+	HttpPort     int    `long:"http-port" env:"HTTP_PORT" required:"true" default:"8080"`
 }
 
 type MysqlEnvironment struct {
