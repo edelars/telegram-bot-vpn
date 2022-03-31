@@ -3,7 +3,6 @@ package dto
 import (
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"math/rand"
 	"strings"
 	"time"
@@ -51,9 +50,17 @@ func (a *StrongswanUser) GetPassword() string {
 	return a.password
 }
 
+func (a *StrongswanUser) GetLoginByte() []byte {
+	return []byte(a.login)
+}
+
+func (a *StrongswanUser) GetPasswordByte() []byte {
+	return []byte(a.password)
+}
+
 func (a *StrongswanUser) encode(s string) string {
 	hx := hex.EncodeToString([]byte(s))
-	return fmt.Sprintf("%s", hx)
+	return hx
 }
 
 func (a *StrongswanUser) generateNewPassword() string {

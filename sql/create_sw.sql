@@ -16,3 +16,7 @@ select * from shared_secret_identity ;
 0x582737343639366436313631373336343733363427
 
 update  shared_secrets set  type = 1 where id =1;
+
+truncate shared_secrets;
+truncate identities;
+truncate shared_secret_identity;
