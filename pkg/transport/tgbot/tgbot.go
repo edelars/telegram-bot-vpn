@@ -103,12 +103,25 @@ func (t *tgBot) Listen(handlers []transport.HandlerI) (err error) {
 	for _, v := range handlers {
 		t.withHandler(v.Endpoint(), v.Handler(), v.Menu())
 	}
-
 	t.bot.Start()
 	return nil
 }
 
 func (t *tgBot) Shutdown() error {
 	t.bot.Stop()
+	return nil
+}
+
+func (t tgBot) Send(tgUserId int64, message string) error {
+
+	rec, err := t.bot.ChatByID(tgUserId)
+	if err != nil {
+		return err
+	}
+	_, err = t.bot.Send(rec, message)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

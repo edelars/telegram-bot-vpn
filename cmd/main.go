@@ -1,11 +1,13 @@
 package main
 
 import (
+	"backend-vpn/internal/payments_worker"
 	"backend-vpn/internal/provider/freekassa"
 	"backend-vpn/pkg/api/http"
 	"backend-vpn/pkg/config"
 	"backend-vpn/pkg/controller"
 	"backend-vpn/pkg/controller/configure"
+	"backend-vpn/pkg/storage"
 	"backend-vpn/pkg/transport/handlers"
 	"backend-vpn/pkg/transport/tgbot"
 	"fmt"
@@ -64,6 +66,8 @@ func main() {
 	errs := make(chan error, 4)
 	go waitInterruptSignal(errs)
 
+	workerPayChan := make(chan *storage.NewPayments, 10)
+
 	ctrl := controller.New()
 	logger.Debug().Msg("configure VPN backend")
 	if err := configure.MainController(
@@ -73,9 +77,12 @@ func main() {
 		env,
 		&logger,
 		freekassa.NewFreeKassa(env),
+		workerPayChan,
 	); err != nil {
 		logger.Panic().Err(err).Msg("failed to configure VPN backend")
 	}
+	paymentsWorker := payments_worker.NewPaymentsWorkerHandler(ctrl, &logger, workerPayChan, tgBot)
+	paymentsWorker.Run()
 
 	serverHttp, err := http.NewServer("", env.HttpPort, ctrl, &logger)
 	if err != nil {
@@ -98,6 +105,13 @@ func main() {
 	logger.Info().Msg("started")
 	err = <-errs
 	logger.Err(err).Msg("trying to shutdown gracefully")
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		err := paymentsWorker.Shutdown()
+		logger.Err(err).Msg("paymentsWorker stopped")
+	}()
 
 	wg.Add(1)
 	go func() {

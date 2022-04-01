@@ -15,7 +15,9 @@ create table IF NOT EXISTS payments
 );
 
 
-create index users_tg_login_index
+create index payments_id_index
     on payments (user_id);
 
-select id from users where tg_id =2 limit 1
+create index payments_checked_index
+    on payments (checked);
+

@@ -8,6 +8,7 @@ import (
 	"backend-vpn/pkg/billing/pay_prepare"
 	"backend-vpn/pkg/config"
 	"backend-vpn/pkg/controller"
+	"backend-vpn/pkg/storage"
 	"backend-vpn/pkg/storage/handlers/create_strongswan_account"
 	"backend-vpn/pkg/storage/handlers/delete_strongswan_account"
 	"backend-vpn/pkg/storage/handlers/get_create_update_user"
@@ -22,7 +23,8 @@ func MainController(ctrl *controller.ControllerImpl,
 	swDb *sqlx.DB,
 	env config.Environment,
 	logger *zerolog.Logger,
-	provider pay_get_invoice.ProviderI) (e error) {
+	provider pay_get_invoice.ProviderI,
+	workerPayChan chan *storage.NewPayments) (e error) {
 
 	propogateErr := func(err error) {
 		if err != nil {
@@ -45,7 +47,7 @@ func MainController(ctrl *controller.ControllerImpl,
 	propogateErr(ctrl.RegisterHandler(pay_prepare.NewPayPrepareHandler(ctrl, logger)))
 	propogateErr(ctrl.RegisterHandler(activate_account.NewActivateAccountHandler(ctrl, logger)))
 	propogateErr(ctrl.RegisterHandler(pay_get_invoice.NewPayGetInvoiceHandler(ctrl, logger, provider)))
-	propogateErr(ctrl.RegisterHandler(pay_incoming_transaction.NewPayIncomingTransactionHandler(ctrl, logger)))
+	propogateErr(ctrl.RegisterHandler(pay_incoming_transaction.NewPayIncomingTransactionHandler(ctrl, logger, workerPayChan)))
 
 	return e
 

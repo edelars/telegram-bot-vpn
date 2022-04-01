@@ -21,12 +21,13 @@ func NewPayTransaction(userId int64, value int) *PayTransaction {
 }
 
 type PayIncomingTransactionHandler struct {
-	ctrl   controller.Controller
-	logger *zerolog.Logger
+	ctrl          controller.Controller
+	logger        *zerolog.Logger
+	workerPayChan chan *storage.NewPayments
 }
 
-func NewPayIncomingTransactionHandler(ctrl controller.Controller, logger *zerolog.Logger) *PayIncomingTransactionHandler {
-	return &PayIncomingTransactionHandler{ctrl: ctrl, logger: logger}
+func NewPayIncomingTransactionHandler(ctrl controller.Controller, logger *zerolog.Logger, workerPayChan chan *storage.NewPayments) *PayIncomingTransactionHandler {
+	return &PayIncomingTransactionHandler{ctrl: ctrl, logger: logger, workerPayChan: workerPayChan}
 }
 
 func (h *PayIncomingTransactionHandler) Exec(ctx context.Context, args *PayTransaction) (err error) {
@@ -40,6 +41,9 @@ func (h *PayIncomingTransactionHandler) Exec(ctx context.Context, args *PayTrans
 		h.logger.Debug().Err(err).Msg("fail")
 		return err
 	}
+	go func() {
+		h.workerPayChan <- &q
+	}()
 
 	return nil
 }

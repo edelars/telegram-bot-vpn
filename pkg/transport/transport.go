@@ -1,6 +1,5 @@
 package transport
 
 type Transport interface {
-	//	Listen()
-	Send() error
+	Send(tgUserId int64, message string) error
 }
