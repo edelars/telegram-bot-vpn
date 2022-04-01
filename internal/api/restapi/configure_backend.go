@@ -35,7 +35,7 @@ func configureAPI(api *operations.BackendAPI) http.Handler {
 
 	api.MultipartformConsumer = runtime.DiscardConsumer
 
-	api.JSONProducer = runtime.JSONProducer()
+	//api.JSONProducer = runtime.JSONProducer()
 
 	if api.PostPayedHandler == nil {
 		api.PostPayedHandler = operations.PostPayedHandlerFunc(func(params operations.PostPayedParams) middleware.Responder {

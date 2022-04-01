@@ -45,6 +45,9 @@ func init() {
         "consumes": [
           "multipart/form-data"
         ],
+        "produces": [
+          "text/plain"
+        ],
         "parameters": [
           {
             "type": "integer",
@@ -94,7 +97,10 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Deployment scheduled."
+            "description": "Deployment scheduled.",
+            "schema": {
+              "type": "string"
+            }
           },
           "500": {
             "description": "Server error."
@@ -147,6 +153,9 @@ func init() {
         "consumes": [
           "multipart/form-data"
         ],
+        "produces": [
+          "text/plain"
+        ],
         "parameters": [
           {
             "type": "integer",
@@ -196,7 +205,10 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Deployment scheduled."
+            "description": "Deployment scheduled.",
+            "schema": {
+              "type": "string"
+            }
           },
           "500": {
             "description": "Server error."

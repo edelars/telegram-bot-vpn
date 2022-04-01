@@ -97,3 +97,8 @@ type DeleteStrongswanAccount struct {
 type AccessRightQuery struct {
 	Id int64
 }
+
+type NewPayments struct {
+	UserId int64
+	Value  int
+}

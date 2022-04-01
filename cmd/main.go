@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend-vpn/internal/provider/freekassa"
 	"backend-vpn/pkg/api/http"
 	"backend-vpn/pkg/config"
 	"backend-vpn/pkg/controller"
@@ -71,6 +72,7 @@ func main() {
 		swanDb,
 		env,
 		&logger,
+		freekassa.NewFreeKassa(env),
 	); err != nil {
 		logger.Panic().Err(err).Msg("failed to configure VPN backend")
 	}

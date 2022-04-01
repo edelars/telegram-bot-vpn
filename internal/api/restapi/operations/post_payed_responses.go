@@ -19,6 +19,11 @@ const PostPayedOKCode int = 200
 swagger:response postPayedOK
 */
 type PostPayedOK struct {
+
+	/*
+	  In: Body
+	*/
+	Payload string `json:"body,omitempty"`
 }
 
 // NewPostPayedOK creates PostPayedOK with default headers values
@@ -27,12 +32,25 @@ func NewPostPayedOK() *PostPayedOK {
 	return &PostPayedOK{}
 }
 
+// WithPayload adds the payload to the post payed o k response
+func (o *PostPayedOK) WithPayload(payload string) *PostPayedOK {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the post payed o k response
+func (o *PostPayedOK) SetPayload(payload string) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *PostPayedOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(200)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
 }
 
 // PostPayedInternalServerErrorCode is the HTTP code returned for type PostPayedInternalServerError

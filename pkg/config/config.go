@@ -9,6 +9,7 @@ type Environment struct {
 	OurServersIP string `long:"servers-sp" env:"SERVERS_IP" required:"true" default:"65.108.96.44"`
 	Psk          string `long:"psk" env:"PSK" required:"true" default:"m9z6v3"`
 	HttpPort     int    `long:"http-port" env:"HTTP_PORT" required:"true" default:"8080"`
+	FreeKassa
 }
 
 type MysqlEnvironment struct {
@@ -21,7 +22,7 @@ type MysqlEnvironment struct {
 	//DBMaxIdleConnCount int `long:"db-max-idle" env:"DB_MAX_IDLE" required:"false" default:"2"`
 	// <= 0 - unlimited (default)
 	//DBMaxConnCount int `long:"db-max-conn" env:"DB_MAX_CONN" required:"false"`
-	// In seconds, <= 0 - unlimited (default)  5212629202:AAEDdzItq_3pcp2V1Yq8L8KSIkEIGvaDcH0
+	// In seconds, <= 0 - unlimited (default)
 	///DBMaxConnLifetime int `long:"db-max-conn-time" env:"DB_MAX_CONN_TIME" required:"false"`
 	DBHostSW string `long:"db-host-sw" env:"DB_HOST_SW" required:"true"`
 	//DBPort     int    `long:"db-port" env:"DB_PORT" required:"true"`
@@ -34,6 +35,13 @@ type BussinesLogic struct {
 	Price01 int `long:"price01" env:"PRICE01" required:"false" default:"179"`
 	Price06 int `long:"price06" env:"PRICE06" required:"false" default:"959"`
 	Price12 int `long:"price12" env:"PRICE12" required:"false" default:"1799"`
+}
+
+type FreeKassa struct {
+	FKMName   string `long:"fk-m-name" env:"FK_M_NAME" required:"true" default:"OrionVPN"`
+	FKId      string `long:"fk-m-id" env:"FK_M_ID" required:"true" default:"14684"`
+	FKSecKey1 string `long:"fk-s-key1" env:"FK_S_KEY1" required:"true" default:"}fTNqXgQ*KHssO{"`
+	FKSecKey2 string `long:"fk-s-key2" env:"FK_S_KEY2" required:"true" default:"?RL[Jz4r(P,*H_{"`
 }
 
 //}fTNqXgQ*KHssO{ key1

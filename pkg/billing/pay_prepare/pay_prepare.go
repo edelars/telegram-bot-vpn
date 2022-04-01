@@ -3,6 +3,7 @@ package pay_prepare
 import (
 	"backend-vpn/internal/dto"
 	"backend-vpn/pkg/billing/activate_account"
+	"backend-vpn/pkg/billing/pay_get_invoice"
 	"backend-vpn/pkg/controller"
 	"context"
 	"fmt"
@@ -42,6 +43,14 @@ func (h *PayPrepareHandler) Exec(ctx context.Context, args *PayPrepare) (err err
 
 	var a *activate_account.ActivateAccount
 	if args.valueToPay > 0 {
+
+		pgi := pay_get_invoice.NewPayInvoice(*args.user, args.valueToPay)
+		if err := h.ctrl.Exec(ctx, pgi); err != nil {
+			h.logger.Debug().Err(err).Msg("fail")
+			return err
+		}
+
+		args.Out.Message = fmt.Sprintf("После оплаты, ваш аккаунт будет активирован\n\n Ссылка для оплаты:\n%s", pgi.Out.Url)
 
 	} else {
 

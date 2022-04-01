@@ -9,9 +9,13 @@ paths:
     post:
       consumes:
         -  multipart/form-data
+      produces:
+       -  text/plain
       responses:
         200:
           description: Deployment scheduled.
+          schema:
+            type: string
         500:
           description: Server error.
       parameters:

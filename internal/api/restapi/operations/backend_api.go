@@ -40,7 +40,7 @@ func NewBackendAPI(spec *loads.Document) *BackendAPI {
 
 		MultipartformConsumer: runtime.DiscardConsumer,
 
-		JSONProducer: runtime.JSONProducer(),
+		TxtProducer: runtime.TextProducer(),
 
 		PostNotifyHandler: PostNotifyHandlerFunc(func(params PostNotifyParams) middleware.Responder {
 			return middleware.NotImplemented("operation PostNotify has not yet been implemented")
@@ -83,9 +83,9 @@ type BackendAPI struct {
 	//   - multipart/form-data
 	MultipartformConsumer runtime.Consumer
 
-	// JSONProducer registers a producer for the following mime types:
-	//   - application/json
-	JSONProducer runtime.Producer
+	// TxtProducer registers a producer for the following mime types:
+	//   - text/plain
+	TxtProducer runtime.Producer
 
 	// PostNotifyHandler sets the operation handler for the post notify operation
 	PostNotifyHandler PostNotifyHandler
@@ -166,8 +166,8 @@ func (o *BackendAPI) Validate() error {
 		unregistered = append(unregistered, "MultipartformConsumer")
 	}
 
-	if o.JSONProducer == nil {
-		unregistered = append(unregistered, "JSONProducer")
+	if o.TxtProducer == nil {
+		unregistered = append(unregistered, "TxtProducer")
 	}
 
 	if o.PostNotifyHandler == nil {
@@ -225,8 +225,8 @@ func (o *BackendAPI) ProducersFor(mediaTypes []string) map[string]runtime.Produc
 	result := make(map[string]runtime.Producer, len(mediaTypes))
 	for _, mt := range mediaTypes {
 		switch mt {
-		case "application/json":
-			result["application/json"] = o.JSONProducer
+		case "text/plain":
+			result["text/plain"] = o.TxtProducer
 		}
 
 		if p, ok := o.customProducers[mt]; ok {

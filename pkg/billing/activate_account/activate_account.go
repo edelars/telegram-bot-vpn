@@ -47,7 +47,7 @@ func (h *ActivateAccountHandler) Exec(ctx context.Context, args *ActivateAccount
 	var newUserDto dto.User
 	newUserDto = *args.user
 
-	addTime := time.Duration(args.toDays) * time.Hour
+	addTime := time.Duration(args.toDays) * 24 * time.Hour
 
 	if newUserDto.ExpiredAt.Before(time.Now()) {
 		newUserDto.ExpiredAt = time.Now().Add(addTime)

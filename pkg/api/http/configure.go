@@ -6,7 +6,6 @@ import (
 	"backend-vpn/pkg/api/http/handlers"
 	"backend-vpn/pkg/controller"
 	"github.com/go-openapi/loads"
-	"github.com/go-openapi/runtime"
 	"github.com/rs/zerolog"
 )
 
@@ -22,7 +21,7 @@ func NewServer(host string, port int, ctrl controller.Controller, logger *zerolo
 
 	//api.JSONConsumer = runtime.JSONConsumer()
 
-	api.JSONProducer = runtime.JSONProducer()
+	//api.JSONProducer = runtime.JSONProducer()
 
 	api.PostPayedHandler = handlers.NewPostPayedHandler(ctrl, logger)
 	api.PostNotifyHandler = handlers.NewNotifyHandler(ctrl, logger)
