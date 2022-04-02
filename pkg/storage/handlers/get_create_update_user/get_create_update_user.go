@@ -23,6 +23,7 @@ type GetCreateUpdateUser struct {
 	InviteReferalId sql.NullString `db:"invite_referal_id"`
 	Login           sql.NullString `db:"tg_login"`
 	Password        sql.NullString `db:"password"`
+	UsedTestPeriod  sql.NullBool   `db:"used_test_period"`
 }
 
 type GetCreateUpdateUserHandler struct {
@@ -88,6 +89,10 @@ func (h GetCreateUpdateUserHandler) Exec(ctx context.Context, args *storage.User
 	if p.Password.Valid {
 		args.Out.User.Password = p.Password.String
 	}
+	if p.UsedTestPeriod.Valid {
+		args.Out.User.UsedTestPeriod = p.UsedTestPeriod.Bool
+	}
+
 	args.Out.User.Psk = h.env.Psk
 
 	return nil
@@ -96,7 +101,7 @@ func (h GetCreateUpdateUserHandler) Exec(ctx context.Context, args *storage.User
 func get(tx *sqlx.Tx, p *GetCreateUpdateUser, tgId int64) (err error) {
 	var rows *sqlx.Rows
 
-	sqlQuery := `select tg_id, tg_login,created_at,referal_id,expired_at,invite_referal_id from users where tg_id = ?`
+	sqlQuery := `select tg_id, tg_login,created_at,referal_id,expired_at,invite_referal_id,password,used_test_period from users where tg_id = ?`
 
 	rows, err = tx.QueryxContext(context.Background(), sqlQuery, tgId)
 	if err != nil {
