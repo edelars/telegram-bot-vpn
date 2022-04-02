@@ -15,6 +15,7 @@ import (
 	"backend-vpn/pkg/storage/handlers/create_strongswan_account"
 	"backend-vpn/pkg/storage/handlers/delete_strongswan_account"
 	"backend-vpn/pkg/storage/handlers/get_create_update_user"
+	"backend-vpn/pkg/storage/handlers/get_expired_users"
 	"backend-vpn/pkg/storage/handlers/get_user"
 	"backend-vpn/pkg/storage/handlers/get_user_balance"
 	"backend-vpn/pkg/storage/handlers/new_payments"
@@ -47,6 +48,7 @@ func MainController(ctrl *controller.ControllerImpl,
 	propogateErr(ctrl.RegisterHandler(get_user_balance.NewGetUserBalanceHandler(mainDb)))
 	propogateErr(ctrl.RegisterHandler(get_user.NewGetUserHandler(mainDb, env)))
 	propogateErr(ctrl.RegisterHandler(writeoff_balance.NewWriteoffBalanceHandler(mainDb)))
+	propogateErr(ctrl.RegisterHandler(get_expired_users.NewGetExpiredUsersHandler(mainDb)))
 
 	//swan
 	propogateErr(ctrl.RegisterHandler(create_strongswan_account.NewCreateStrongswanAccountHandler(swDb, env)))

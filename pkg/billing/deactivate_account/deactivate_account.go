@@ -42,7 +42,7 @@ func (h *deactivateAccountHandler) Exec(ctx context.Context, args *DeactivateAcc
 	var newUserDto dto.User
 	newUserDto = *args.user
 
-	newUserDto.ExpiredAt = time.Now()
+	newUserDto.ExpiredAt = time.Date(2000, 1, 1, 1, 1, 1, 1, time.UTC)
 
 	//0
 	err, ssu := dto.NewStrongswanUser(newUserDto.Login, newUserDto.Password, false)

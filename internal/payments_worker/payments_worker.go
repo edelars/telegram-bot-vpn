@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	timerDuration = 60
+	timerDuration = 180
 )
 
 type PaymentsWorkerHandler struct {
@@ -56,7 +56,9 @@ func (h *PaymentsWorkerHandler) start(ctx context.Context) {
 			return
 		case <-timer.C:
 			h.logger.Debug().Msg("PaymentsWorkerHandler Got timer")
-
+			timer.Stop()
+			h.DisableExpiredAccounts(ctx)
+			timer.Reset(time.Second * timerDuration)
 		case pit, ok := <-h.incomingChan:
 			h.logger.Debug().Msg("PaymentsWorkerHandler Got incomingChan")
 			if ok {
@@ -137,5 +139,27 @@ func (h PaymentsWorkerHandler) HandlePit(ctx context.Context, pit *storage.NewPa
 func (h PaymentsWorkerHandler) SendMsgToClient(userId int64, msg string) {
 	if err := h.msgBot.Send(userId, msg); err != nil {
 		h.logger.Err(err).Msgf("cant send msg to usr with id:%d", userId)
+	}
+}
+
+func (h PaymentsWorkerHandler) DisableExpiredAccounts(ctx context.Context) {
+
+	eu := storage.GetExpiredUsers{}
+	if err := h.ctrl.Exec(ctx, &eu); err != nil {
+		h.logger.Debug().Err(err).Msg("DisableExpiredAccounts:GetExpiredUsers fail")
+		return
+	}
+
+	for _, user := range eu.Out {
+		h.logger.Debug().Msgf("disable user %s %d", user.Login, user.Id)
+
+		da, err := deactivate_account.NewDeactivateAccount(user)
+		if err != nil {
+			h.logger.Debug().Err(err).Msg("DisableExpiredAccounts:NewDeactivateAccount fail")
+			continue
+		}
+		if err := h.ctrl.Exec(ctx, da); err != nil {
+			h.logger.Debug().Err(err).Msg("DisableExpiredAccounts:DeactivateAccount fail")
+		}
 	}
 }

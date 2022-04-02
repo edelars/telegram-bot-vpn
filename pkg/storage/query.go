@@ -136,3 +136,7 @@ type WriteOffBalance struct {
 	UserId int64
 	Value  int
 }
+
+type GetExpiredUsers struct {
+	Out []*dto.User
+}
