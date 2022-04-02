@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"strconv"
 	"time"
 )
 
@@ -39,7 +40,7 @@ func (h GetCreateUpdateUserHandler) Exec(ctx context.Context, args *storage.User
 
 	userLogin := args.GetLogin()
 	if userLogin == "" {
-		return fmt.Errorf("user login in query not set")
+		userLogin = strconv.FormatInt(args.GetId(), 10)
 	}
 
 	tx, err := h.db.BeginTxx(ctx, &sql.TxOptions{Isolation: sql.LevelRepeatableRead})
