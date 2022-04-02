@@ -2,6 +2,7 @@ package account_info
 
 import (
 	"backend-vpn/internal/dto"
+	"backend-vpn/pkg/config"
 	"backend-vpn/pkg/controller"
 	"backend-vpn/pkg/storage"
 	"context"
@@ -30,10 +31,11 @@ func NewAccountInfo(userId int64) *AccountInfo {
 type accountInfoHandler struct {
 	ctrl   controller.Controller
 	logger *zerolog.Logger
+	env    config.Environment
 }
 
-func NewAccountInfoHandler(ctrl controller.Controller, logger *zerolog.Logger) *accountInfoHandler {
-	return &accountInfoHandler{logger: logger, ctrl: ctrl}
+func NewAccountInfoHandler(ctrl controller.Controller, logger *zerolog.Logger, env config.Environment) *accountInfoHandler {
+	return &accountInfoHandler{logger: logger, ctrl: ctrl, env: env}
 }
 
 func (h accountInfoHandler) Exec(ctx context.Context, args *AccountInfo) (err error) {
@@ -56,8 +58,9 @@ func (h accountInfoHandler) Exec(ctx context.Context, args *AccountInfo) (err er
 		}
 		args.balance = int(bal.Out.TotalBalance)
 	}
-	args.Out.Message = fmt.Sprintf("Информация об аккаунте VPN:\n\nlogin: %s\npassword: %s\npresharedkey(PSK): %s\n\nАктивен до: %s\nБаланс: %d руб.",
-		args.user.Login, args.user.Password, args.user.Psk, args.user.ExpiredAt.Format("02 Jan 06 15:04 MST"), args.balance)
+	ipadr := h.env.OurServersIP
+	args.Out.Message = fmt.Sprintf("Информация об аккаунте VPN:\n\nАдрес IP: %s\nlogin: %s\npassword: %s\npresharedkey(PSK): %s\n\nАктивен до: %s\nБаланс: %d руб.",
+		ipadr, args.user.Login, args.user.Password, args.user.Psk, args.user.ExpiredAt.Format("02 Jan 06 15:04 MST"), args.balance)
 
 	return nil
 }

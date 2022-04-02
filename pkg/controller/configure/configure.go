@@ -63,7 +63,7 @@ func MainController(ctrl *controller.ControllerImpl,
 	propogateErr(ctrl.RegisterHandler(pay_incoming_transaction.NewPayIncomingTransactionHandler(ctrl, logger, workerPayChan)))
 	propogateErr(ctrl.RegisterHandler(auto_suggester_tariff_plan.NewAutoSuggesterTariffPlanHandler(env)))
 	propogateErr(ctrl.RegisterHandler(deactivate_account.NewActivateAccountHandler(ctrl, logger)))
-	propogateErr(ctrl.RegisterHandler(account_info.NewAccountInfoHandler(ctrl, logger)))
+	propogateErr(ctrl.RegisterHandler(account_info.NewAccountInfoHandler(ctrl, logger, env)))
 
 	return e
 
