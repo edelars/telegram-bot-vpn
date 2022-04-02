@@ -2,6 +2,7 @@ package configure
 
 import (
 	"backend-vpn/pkg/access_right"
+	"backend-vpn/pkg/billing/account_info"
 	"backend-vpn/pkg/billing/activate_account"
 	"backend-vpn/pkg/billing/auto_suggester_tariff_plan"
 	"backend-vpn/pkg/billing/deactivate_account"
@@ -60,6 +61,7 @@ func MainController(ctrl *controller.ControllerImpl,
 	propogateErr(ctrl.RegisterHandler(pay_incoming_transaction.NewPayIncomingTransactionHandler(ctrl, logger, workerPayChan)))
 	propogateErr(ctrl.RegisterHandler(auto_suggester_tariff_plan.NewAutoSuggesterTariffPlanHandler(env)))
 	propogateErr(ctrl.RegisterHandler(deactivate_account.NewActivateAccountHandler(ctrl, logger)))
+	propogateErr(ctrl.RegisterHandler(account_info.NewAccountInfoHandler(ctrl, logger)))
 
 	return e
 

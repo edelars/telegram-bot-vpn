@@ -1,6 +1,7 @@
 package payments_worker
 
 import (
+	"backend-vpn/pkg/billing/account_info"
 	"backend-vpn/pkg/billing/activate_account"
 	"backend-vpn/pkg/billing/auto_suggester_tariff_plan"
 	"backend-vpn/pkg/billing/deactivate_account"
@@ -121,7 +122,15 @@ func (h PaymentsWorkerHandler) HandlePit(ctx context.Context, pit *storage.NewPa
 		}
 		return
 	}
-	h.SendMsgToClient(pit.UserId, fmt.Sprintf("Вам активировано дней: %d", pln.Out.TariffDays))
+	h.SendMsgToClient(pit.UserId, fmt.Sprintf("Вам активировано дней: %d\nБаланс: %d", pln.Out.TariffDays, int(bal.Out.TotalBalance)-pln.Out.Cost))
+
+	ai := account_info.NewAccountInfoWithData(ngu.Out.User, int(bal.Out.TotalBalance)-pln.Out.Cost)
+	if err := h.ctrl.Exec(ctx, ai); err != nil {
+		h.logger.Debug().Err(err).Msg("PaymentsWorkerHandler:AccountInfo fail")
+		return
+	}
+
+	h.SendMsgToClient(pit.UserId, ai.Out.Message)
 
 }
 

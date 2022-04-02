@@ -1,15 +1,20 @@
 package info
 
 import (
+	"backend-vpn/pkg/billing/account_info"
+	"backend-vpn/pkg/controller"
 	"backend-vpn/pkg/transport"
-	"fmt"
+	"context"
+	"github.com/rs/zerolog"
 )
 
 type Info struct {
+	ctrl   controller.Controller
+	logger *zerolog.Logger
 }
 
-func NewInfo() *Info {
-	return &Info{}
+func NewInfo(ctrl controller.Controller, logger *zerolog.Logger) *Info {
+	return &Info{ctrl: ctrl, logger: logger}
 }
 
 func (p *Info) Endpoint() interface{} {
@@ -18,9 +23,14 @@ func (p *Info) Endpoint() interface{} {
 
 func (p *Info) Handler() func(data transport.HandlerData) interface{} {
 	return func(data transport.HandlerData) interface{} {
-		return fmt.Sprintf("Информация об аккаунте VPN:\n\n/login: %s\n/password: %s\npresharedkey(PSK): %s\n\n Аккаунт активен до(UTC +0):%s\nБаланс: %s руб.", "", "", "", "", "")
+		ai := account_info.NewAccountInfo(data.Id)
+		if err := p.ctrl.Exec(context.Background(), ai); err != nil {
+			p.logger.Debug().Err(err).Msg("Info:AccountInfo fail")
+			return "Ошибка, попробуйте позже"
+		}
+
+		return ai.Out.Message
 	}
-	//TODO get data
 }
 
 func (p *Info) Menu() []transport.MenuI {
