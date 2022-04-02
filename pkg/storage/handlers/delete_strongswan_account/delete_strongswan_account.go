@@ -9,7 +9,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type DeleteStrongswanAccountHandler struct {
+type deleteStrongswanAccountHandler struct {
 	db *sqlx.DB
 }
 
@@ -17,11 +17,11 @@ var (
 	ErrNotExist = errors.New("no such user")
 )
 
-func NewDeleteStrongswanAccountHandler(db *sqlx.DB) *DeleteStrongswanAccountHandler {
-	return &DeleteStrongswanAccountHandler{db: db}
+func NewDeleteStrongswanAccountHandler(db *sqlx.DB) *deleteStrongswanAccountHandler {
+	return &deleteStrongswanAccountHandler{db: db}
 }
 
-func (h DeleteStrongswanAccountHandler) Exec(ctx context.Context, args *storage.DeleteStrongswanAccount) (err error) {
+func (h deleteStrongswanAccountHandler) Exec(ctx context.Context, args *storage.DeleteStrongswanAccount) (err error) {
 
 	if args.User == nil {
 		return errors.New("No *User")
@@ -118,7 +118,7 @@ func (h DeleteStrongswanAccountHandler) Exec(ctx context.Context, args *storage.
 
 	//5 delete shared_secret
 	sqlQuery6 := "delete from shared_secrets where id = ?;"
-	_, err = tx.Exec(sqlQuery6, identitiesId)
+	_, err = tx.Exec(sqlQuery6, sharedSecretId)
 	if err != nil {
 		_ = tx.Rollback()
 		return fmt.Errorf("failed to delete user shared_secret by identity %s: %w", args.User.GetLogin(), err)
@@ -132,6 +132,6 @@ func (h DeleteStrongswanAccountHandler) Exec(ctx context.Context, args *storage.
 	return err
 }
 
-func (h *DeleteStrongswanAccountHandler) Context() interface{} {
+func (h *deleteStrongswanAccountHandler) Context() interface{} {
 	return (*storage.DeleteStrongswanAccount)(nil)
 }

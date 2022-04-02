@@ -12,33 +12,34 @@ import (
 )
 
 type ActivateAccount struct {
-	user   *dto.User
-	toDays int
+	user     *dto.User
+	itsTrial bool
+	toDays   int
 }
 
-func NewActivateAccount(user *dto.User, toDays int) (err error, a *ActivateAccount) {
+func NewActivateAccount(user *dto.User, toDays int, itsTrial bool) (a *ActivateAccount, err error) {
 
 	if user != nil {
-		return err, &ActivateAccount{user: user, toDays: toDays}
+		return &ActivateAccount{user: user, toDays: toDays, itsTrial: itsTrial}, err
 	}
 
-	return errors.New("*user is empty"), a
+	return a, errors.New("*user is empty")
 }
 
 func (a *ActivateAccount) GetUser() *dto.User {
 	return a.user
 }
 
-type ActivateAccountHandler struct {
+type activateAccountHandler struct {
 	ctrl   controller.Controller
 	logger *zerolog.Logger
 }
 
-func NewActivateAccountHandler(ctrl controller.Controller, logger *zerolog.Logger) *ActivateAccountHandler {
-	return &ActivateAccountHandler{ctrl: ctrl, logger: logger}
+func NewActivateAccountHandler(ctrl controller.Controller, logger *zerolog.Logger) *activateAccountHandler {
+	return &activateAccountHandler{ctrl: ctrl, logger: logger}
 }
 
-func (h *ActivateAccountHandler) Exec(ctx context.Context, args *ActivateAccount) (err error) {
+func (h *activateAccountHandler) Exec(ctx context.Context, args *ActivateAccount) (err error) {
 
 	if args.toDays < 0 {
 		return errors.New("days too low")
@@ -54,7 +55,7 @@ func (h *ActivateAccountHandler) Exec(ctx context.Context, args *ActivateAccount
 	} else {
 		newUserDto.ExpiredAt = newUserDto.ExpiredAt.Add(addTime)
 	}
-	newUserDto.UsedTestPeriod = true
+	newUserDto.UsedTestPeriod = args.itsTrial
 
 	var genNewPass bool
 	if newUserDto.Password == "" {
@@ -99,6 +100,6 @@ func (h *ActivateAccountHandler) Exec(ctx context.Context, args *ActivateAccount
 	return err
 }
 
-func (h *ActivateAccountHandler) Context() interface{} {
+func (h *activateAccountHandler) Context() interface{} {
 	return (*ActivateAccount)(nil)
 }

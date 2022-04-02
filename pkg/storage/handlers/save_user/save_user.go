@@ -8,15 +8,15 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type SaveUserHandler struct {
+type saveUserHandler struct {
 	db *sqlx.DB
 }
 
-func NewSaveUserHandler(db *sqlx.DB) *SaveUserHandler {
-	return &SaveUserHandler{db: db}
+func NewSaveUserHandler(db *sqlx.DB) *saveUserHandler {
+	return &saveUserHandler{db: db}
 }
 
-func (h SaveUserHandler) Exec(ctx context.Context, args *storage.SaveUserQuery) (err error) {
+func (h saveUserHandler) Exec(ctx context.Context, args *storage.SaveUserQuery) (err error) {
 
 	tx, err := h.db.BeginTxx(ctx, &sql.TxOptions{Isolation: sql.LevelDefault})
 	if err != nil {
@@ -45,6 +45,6 @@ func (h SaveUserHandler) Exec(ctx context.Context, args *storage.SaveUserQuery) 
 	return nil
 }
 
-func (h *SaveUserHandler) Context() interface{} {
+func (h *saveUserHandler) Context() interface{} {
 	return (*storage.SaveUserQuery)(nil)
 }

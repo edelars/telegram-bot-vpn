@@ -15,16 +15,16 @@ import (
 	"strings"
 )
 
-type CreateStrongswanAccountHandler struct {
+type createStrongswanAccountHandler struct {
 	db  *sqlx.DB
 	env config.Environment
 }
 
-func NewCreateStrongswanAccountHandler(db *sqlx.DB, env config.Environment) *CreateStrongswanAccountHandler {
-	return &CreateStrongswanAccountHandler{db: db, env: env}
+func NewCreateStrongswanAccountHandler(db *sqlx.DB, env config.Environment) *createStrongswanAccountHandler {
+	return &createStrongswanAccountHandler{db: db, env: env}
 }
 
-func (h CreateStrongswanAccountHandler) Exec(ctx context.Context, args *storage.CreateStrongswanAccount) (err error) {
+func (h createStrongswanAccountHandler) Exec(ctx context.Context, args *storage.CreateStrongswanAccount) (err error) {
 
 	if args.User == nil {
 		return errors.New("No *User")
@@ -96,7 +96,7 @@ func (h CreateStrongswanAccountHandler) Exec(ctx context.Context, args *storage.
 	return err
 }
 
-func (h *CreateStrongswanAccountHandler) GetOrCreateServersIdent(tx *sqlx.Tx) (err error, insertedIdSrv []int64) {
+func (h *createStrongswanAccountHandler) GetOrCreateServersIdent(tx *sqlx.Tx) (err error, insertedIdSrv []int64) {
 
 	srvIp := strings.Fields(h.env.OurServersIP)
 	sqlQueryIns := `insert into identities (type, data) VALUES (?,?);`
@@ -154,6 +154,6 @@ func IP4toInt(IPv4Address net.IP) int64 {
 	return IPv4Int.Int64()
 }
 
-func (h *CreateStrongswanAccountHandler) Context() interface{} {
+func (h *createStrongswanAccountHandler) Context() interface{} {
 	return (*storage.CreateStrongswanAccount)(nil)
 }

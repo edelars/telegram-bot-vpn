@@ -102,3 +102,37 @@ type NewPayments struct {
 	UserId int64
 	Value  int
 }
+
+type UncheckedPaymentsQuery struct {
+	UserId int64
+	Out    struct {
+		IncBalance int64
+	}
+}
+
+type GetUserBalanceQuery struct {
+	UserId int64
+	Out    struct {
+		TotalBalance int64
+	}
+}
+
+type GetUser struct {
+	UserId int64
+	Out    struct {
+		User *dto.User
+	}
+}
+
+func NewGetUser(userId int64) *GetUser {
+	u := &dto.User{}
+	return &GetUser{
+		UserId: userId,
+		Out:    struct{ User *dto.User }{User: u},
+	}
+}
+
+type WriteOffBalance struct {
+	UserId int64
+	Value  int
+}

@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-type NewPaymentsHandler struct {
+type newPaymentsHandler struct {
 	db *sqlx.DB
 }
 
@@ -19,11 +19,11 @@ var (
 	ErrUserIdZero = errors.New("userid is 0")
 )
 
-func NewNewPaymentsHandler(db *sqlx.DB) *NewPaymentsHandler {
-	return &NewPaymentsHandler{db: db}
+func NewNewPaymentsHandler(db *sqlx.DB) *newPaymentsHandler {
+	return &newPaymentsHandler{db: db}
 }
 
-func (h NewPaymentsHandler) Exec(ctx context.Context, args *storage.NewPayments) (err error) {
+func (h newPaymentsHandler) Exec(ctx context.Context, args *storage.NewPayments) (err error) {
 
 	tx, err := h.db.BeginTxx(ctx, &sql.TxOptions{Isolation: sql.LevelDefault})
 	if err != nil {
@@ -76,6 +76,6 @@ func (h NewPaymentsHandler) Exec(ctx context.Context, args *storage.NewPayments)
 	return nil
 }
 
-func (h *NewPaymentsHandler) Context() interface{} {
+func (h *newPaymentsHandler) Context() interface{} {
 	return (*storage.NewPayments)(nil)
 }

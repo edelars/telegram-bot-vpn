@@ -11,6 +11,7 @@ create table IF NOT EXISTS users
     tg_id   bigint                      null,
     referal_id varchar(256)                        null,
     invite_referal_id varchar(256)                 null,
+    invite_referal_payed bool not null default false,
     expired_at timestamp                           null,
     used_test_period bool not null default false,
     password varchar(256) null,

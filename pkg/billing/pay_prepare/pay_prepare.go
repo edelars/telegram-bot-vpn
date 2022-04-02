@@ -59,7 +59,7 @@ func (h *PayPrepareHandler) Exec(ctx context.Context, args *PayPrepare) (err err
 			return nil
 		}
 
-		err, a = activate_account.NewActivateAccount(args.user, args.dayCount)
+		a, err = activate_account.NewActivateAccount(args.user, args.dayCount, true)
 		if err != nil {
 			return err
 		}
