@@ -39,6 +39,7 @@ func NewBackendAPI(spec *loads.Document) *BackendAPI {
 		BearerAuthenticator: security.BearerAuth,
 
 		MultipartformConsumer: runtime.DiscardConsumer,
+		UrlformConsumer:       runtime.DiscardConsumer,
 
 		TxtProducer: runtime.TextProducer(),
 
@@ -82,6 +83,9 @@ type BackendAPI struct {
 	// MultipartformConsumer registers a consumer for the following mime types:
 	//   - multipart/form-data
 	MultipartformConsumer runtime.Consumer
+	// UrlformConsumer registers a consumer for the following mime types:
+	//   - application/x-www-form-urlencoded
+	UrlformConsumer runtime.Consumer
 
 	// TxtProducer registers a producer for the following mime types:
 	//   - text/plain
@@ -165,6 +169,9 @@ func (o *BackendAPI) Validate() error {
 	if o.MultipartformConsumer == nil {
 		unregistered = append(unregistered, "MultipartformConsumer")
 	}
+	if o.UrlformConsumer == nil {
+		unregistered = append(unregistered, "UrlformConsumer")
+	}
 
 	if o.TxtProducer == nil {
 		unregistered = append(unregistered, "TxtProducer")
@@ -210,6 +217,8 @@ func (o *BackendAPI) ConsumersFor(mediaTypes []string) map[string]runtime.Consum
 		switch mt {
 		case "multipart/form-data":
 			result["multipart/form-data"] = o.MultipartformConsumer
+		case "application/x-www-form-urlencoded":
+			result["application/x-www-form-urlencoded"] = o.UrlformConsumer
 		}
 
 		if c, ok := o.customConsumers[mt]; ok {

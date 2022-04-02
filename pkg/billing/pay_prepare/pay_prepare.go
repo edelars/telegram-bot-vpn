@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	messageSuccess = "\nДанные для подключения:\nLogin: %s\n Password: %s\nPreSharedKey (PSK): %s\n\nДля получения помощи по настройке VPN наберите команду /help или выберете её в меню"
+	messageSuccess = "\nДанные для подключения:\nLogin: %s\nPassword: %s\nPreSharedKey (PSK): %s\n\nДля получения помощи по настройке VPN наберите команду /help или выберете её в меню"
 )
 
 type PayPrepare struct {
@@ -69,7 +69,7 @@ func (h *PayPrepareHandler) Exec(ctx context.Context, args *PayPrepare) (err err
 		}
 		usr := a.GetUser()
 		h.logger.Debug().Msgf("New trial account for user %s ", usr.Login)
-		args.Out.Message = fmt.Sprintf("Вам активирован пробный период на %d день.\n"+messageSuccess, usr.Login, usr.Password, usr.Psk, args.dayCount)
+		args.Out.Message = fmt.Sprintf("Вам активирован пробный период на %d день.\n"+messageSuccess, args.dayCount, usr.Login, usr.Password, usr.Psk)
 	}
 
 	return err

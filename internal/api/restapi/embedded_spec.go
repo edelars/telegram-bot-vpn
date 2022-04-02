@@ -43,7 +43,7 @@ func init() {
     "/payed": {
       "post": {
         "consumes": [
-          "multipart/form-data"
+          "application/x-www-form-urlencoded"
         ],
         "produces": [
           "text/plain"
@@ -151,7 +151,7 @@ func init() {
     "/payed": {
       "post": {
         "consumes": [
-          "multipart/form-data"
+          "application/x-www-form-urlencoded"
         ],
         "produces": [
           "text/plain"

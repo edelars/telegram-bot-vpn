@@ -11,6 +11,7 @@
 //
 //  Consumes:
 //    - multipart/form-data
+//    - application/x-www-form-urlencoded
 //
 //  Produces:
 //    - text/plain
