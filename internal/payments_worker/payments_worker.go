@@ -55,7 +55,6 @@ func (h *PaymentsWorkerHandler) start(ctx context.Context) {
 			h.logger.Debug().Msg("PaymentsWorkerHandler Got ctx.Done")
 			return
 		case <-timer.C:
-			h.logger.Debug().Msg("PaymentsWorkerHandler Got timer")
 			timer.Stop()
 			h.DisableExpiredAccounts(ctx)
 			timer.Reset(time.Second * timerDuration)
