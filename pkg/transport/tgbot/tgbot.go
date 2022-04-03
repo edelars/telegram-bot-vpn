@@ -1,6 +1,8 @@
 package tgbot
 
 import (
+	"backend-vpn/internal/dto"
+	"bytes"
 	"time"
 
 	"backend-vpn/pkg/transport"
@@ -88,8 +90,20 @@ func (t *tgBot) withMenuHandler(btn *tele.Btn, v transport.MenuI) {
 			Username: c.Sender().Username,
 			Id:       c.Sender().ID,
 		}
-		print(v.Data())
-		return c.Send(v.Handler()(data))
+
+		what := v.Handler()(data)
+
+		switch object := what.(type) {
+		case string:
+			return c.Send(object)
+		case dto.TgFile:
+			reader := bytes.NewReader(object.File)
+			td := tele.Document{File: tele.FromReader(reader), FileName: object.Filename, Caption: object.Caption}
+			return c.Send(&td)
+		default:
+			return c.Send(what)
+		}
+
 	})
 }
 

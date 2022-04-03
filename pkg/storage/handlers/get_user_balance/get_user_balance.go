@@ -3,6 +3,7 @@ package get_user_balance
 import (
 	"backend-vpn/pkg/storage"
 	"context"
+	"database/sql"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 )
@@ -26,7 +27,7 @@ func (h getUserBalanceHandler) Exec(ctx context.Context, args *storage.GetUserBa
 		return fmt.Errorf("failed to get balance id %d: %w", args.UserId, err)
 	}
 
-	var balance int64
+	var balance sql.NullInt64
 
 	for rows.Next() {
 		err = rows.Scan(&balance)
@@ -36,7 +37,9 @@ func (h getUserBalanceHandler) Exec(ctx context.Context, args *storage.GetUserBa
 	}
 	defer rows.Close()
 
-	args.Out.TotalBalance = balance
+	if balance.Valid {
+		args.Out.TotalBalance = balance.Int64
+	}
 
 	return nil
 }

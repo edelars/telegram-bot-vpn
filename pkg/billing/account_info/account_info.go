@@ -59,8 +59,8 @@ func (h accountInfoHandler) Exec(ctx context.Context, args *AccountInfo) (err er
 		args.balance = int(bal.Out.TotalBalance)
 	}
 	ipadr := h.env.OurServersIP
-	args.Out.Message = fmt.Sprintf("Информация об аккаунте VPN:\n\nАдрес IP: %s\nlogin: %s\npassword: %s\npresharedkey(PSK): %s\n\nАктивен до: %s\nБаланс: %d руб.",
-		ipadr, args.user.Login, args.user.Password, args.user.Psk, args.user.ExpiredAt.Format("02 Jan 06 15:04 MST"), args.balance)
+	args.Out.Message = fmt.Sprintf("Информация об аккаунте VPN:\n\nАдрес IP: %s\nlogin: %s\npassword: %s\npresharedkey(PSK): %s\n\nАктивен до: %s\nБаланс: %d руб.\n\nId: %d\nRef id: %s",
+		ipadr, args.user.Login, args.user.Password, args.user.Psk, args.user.ExpiredAt.Format("02 Jan 06 15:04 MST"), args.balance, args.user.Id, args.user.ReferalId)
 
 	return nil
 }

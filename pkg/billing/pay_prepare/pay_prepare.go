@@ -2,16 +2,13 @@ package pay_prepare
 
 import (
 	"backend-vpn/internal/dto"
+	"backend-vpn/pkg/billing/account_info"
 	"backend-vpn/pkg/billing/activate_account"
 	"backend-vpn/pkg/billing/pay_get_invoice"
 	"backend-vpn/pkg/controller"
 	"context"
 	"fmt"
 	"github.com/rs/zerolog"
-)
-
-const (
-	messageSuccess = "\nДанные для подключения:\nLogin: %s\nPassword: %s\nPreSharedKey (PSK): %s\n\nДля получения помощи по настройке VPN наберите команду /help или выберете её в меню"
 )
 
 type PayPrepare struct {
@@ -69,7 +66,14 @@ func (h *PayPrepareHandler) Exec(ctx context.Context, args *PayPrepare) (err err
 		}
 		usr := a.GetUser()
 		h.logger.Debug().Msgf("New trial account for user %s ", usr.Login)
-		args.Out.Message = fmt.Sprintf("Вам активирован пробный период на %d день.\n"+messageSuccess, args.dayCount, usr.Login, usr.Password, usr.Psk)
+
+		ai := account_info.NewAccountInfoWithData(usr, 0)
+		if err := h.ctrl.Exec(ctx, ai); err != nil {
+			h.logger.Debug().Err(err).Msg("PayPrepareHandler:AccountInfo fail")
+			return err
+		}
+
+		args.Out.Message = fmt.Sprintf("Вам активирован пробный период на %d день.\n\n"+ai.Out.Message, args.dayCount)
 	}
 
 	return err

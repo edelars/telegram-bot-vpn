@@ -26,7 +26,7 @@ func (p *Price) Endpoint() interface{} {
 func (p *Price) Handler() func(data transport.HandlerData) interface{} {
 	return func(data transport.HandlerData) interface{} {
 
-		return fmt.Sprintf("Тестовый - бесплатно в течении 24ч\nМесяц (30 дней)- %dр\nПолгода (180 дней)- %dр\nГод (365 дней)- %d\nНажмите кнопку внизу для покупки",
+		return fmt.Sprintf("Тестовый - бесплатно в течении 24ч\nМесяц (30 дней)- %dр\nПолгода (180 дней)- %dр\nГод (365 дней)- %dр\nНажмите кнопку внизу для покупки",
 			p.env.Price01, p.env.Price06, p.env.Price12)
 	}
 }
