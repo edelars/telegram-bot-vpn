@@ -75,10 +75,6 @@ func NewSaveUserQuery(user *dto.User) (err error, u *SaveUserQuery) {
 	if user.Login == "" {
 		return errors.New("login is nil"), u
 	}
-	if user.Password == "" {
-		return errors.New("pass is nil"), u
-	}
-
 	return err, &SaveUserQuery{user: user}
 }
 

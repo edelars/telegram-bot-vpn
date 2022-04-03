@@ -121,8 +121,8 @@ func create(tx *sqlx.Tx, p *GetCreateUpdateUser, userLogin string, tgId int64, r
 	var rows *sqlx.Rows
 
 	sqlQuery := `insert into users (created_at, tg_login, referal_id, expired_at, invite_referal_id,tg_id) VALUES (?,?,?,?,?,?);`
-
-	rows, err = tx.Queryx(sqlQuery, time.Now(), userLogin, referalId, time.Now(), invite_referal_id, tgId)
+	expired := time.Date(2000, 1, 1, 1, 1, 1, 1, time.UTC)
+	rows, err = tx.Queryx(sqlQuery, time.Now(), userLogin, referalId, expired, invite_referal_id, tgId)
 	if err != nil {
 		return fmt.Errorf("failed to create user %s: %w", userLogin, err)
 	}

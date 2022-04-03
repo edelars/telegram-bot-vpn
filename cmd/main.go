@@ -84,7 +84,7 @@ func main() {
 	paymentsWorker := payments_worker.NewPaymentsWorkerHandler(ctrl, &logger, workerPayChan, tgBot)
 	paymentsWorker.Run()
 
-	serverHttp, err := http.NewServer("", env.HttpPort, ctrl, &logger)
+	serverHttp, err := http.NewServer("", env.HttpPort, ctrl, &logger, env)
 	if err != nil {
 		logger.Panic().Err(err).Msg("unable to create http server")
 	}

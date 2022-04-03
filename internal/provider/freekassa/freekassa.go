@@ -31,8 +31,16 @@ func (k FreeKassa) GenerateUrlToPay(pd dto.PayData) (err error, url string) {
 		return errors.New("value too small"), url
 	}
 
-	sign := fmt.Sprintf("%s:%d:%s:%s:%s", k.env.FKId, pd.Value, k.env.FKSecKey1, currency, pd.Order)
-	signMd5 := fmt.Sprintf("%x", md5.Sum([]byte(sign)))
+	signMd5 := k.md5(pd.Value, k.env.FKId, k.env.FKSecKey1, currency, pd.Order)
 	url = fmt.Sprintf("%s?m=%s&oa=%d&i=&currency=%s&o=%s&pay=PAY&s=%s", urlApi, k.env.FKId, pd.Value, currency, pd.Order, signMd5)
 	return err, url
+}
+
+func (k FreeKassa) md5(Value int, Id, FKSecKey1, Currency, Order string) string {
+	sign := fmt.Sprintf("%s:%d:%s:%s:%s", Id, Value, FKSecKey1, Currency, Order)
+	return fmt.Sprintf("%x", md5.Sum([]byte(sign)))
+}
+
+func (k FreeKassa) SignVerify(pd dto.PayData, sign string) bool {
+	return sign == k.md5(pd.Value, k.env.FKId, k.env.FKSecKey1, currency, pd.Order)
 }
