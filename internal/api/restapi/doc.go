@@ -10,6 +10,7 @@
 //  Version: 0.0.0
 //
 //  Consumes:
+//    - application/json
 //    - multipart/form-data
 //    - application/x-www-form-urlencoded
 //

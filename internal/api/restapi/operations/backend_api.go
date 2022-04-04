@@ -38,6 +38,7 @@ func NewBackendAPI(spec *loads.Document) *BackendAPI {
 		APIKeyAuthenticator: security.APIKeyAuth,
 		BearerAuthenticator: security.BearerAuth,
 
+		JSONConsumer:          runtime.JSONConsumer(),
 		MultipartformConsumer: runtime.DiscardConsumer,
 		UrlformConsumer:       runtime.DiscardConsumer,
 
@@ -48,6 +49,9 @@ func NewBackendAPI(spec *loads.Document) *BackendAPI {
 		}),
 		PostPayedHandler: PostPayedHandlerFunc(func(params PostPayedParams) middleware.Responder {
 			return middleware.NotImplemented("operation PostPayed has not yet been implemented")
+		}),
+		PostQiwiPayedHandler: PostQiwiPayedHandlerFunc(func(params PostQiwiPayedParams) middleware.Responder {
+			return middleware.NotImplemented("operation PostQiwiPayed has not yet been implemented")
 		}),
 		PostTryagainHandler: PostTryagainHandlerFunc(func(params PostTryagainParams) middleware.Responder {
 			return middleware.NotImplemented("operation PostTryagain has not yet been implemented")
@@ -80,6 +84,9 @@ type BackendAPI struct {
 	// It has a default implementation in the security package, however you can replace it for your particular usage.
 	BearerAuthenticator func(string, security.ScopedTokenAuthentication) runtime.Authenticator
 
+	// JSONConsumer registers a consumer for the following mime types:
+	//   - application/json
+	JSONConsumer runtime.Consumer
 	// MultipartformConsumer registers a consumer for the following mime types:
 	//   - multipart/form-data
 	MultipartformConsumer runtime.Consumer
@@ -95,6 +102,8 @@ type BackendAPI struct {
 	PostNotifyHandler PostNotifyHandler
 	// PostPayedHandler sets the operation handler for the post payed operation
 	PostPayedHandler PostPayedHandler
+	// PostQiwiPayedHandler sets the operation handler for the post qiwi payed operation
+	PostQiwiPayedHandler PostQiwiPayedHandler
 	// PostTryagainHandler sets the operation handler for the post tryagain operation
 	PostTryagainHandler PostTryagainHandler
 
@@ -166,6 +175,9 @@ func (o *BackendAPI) RegisterFormat(name string, format strfmt.Format, validator
 func (o *BackendAPI) Validate() error {
 	var unregistered []string
 
+	if o.JSONConsumer == nil {
+		unregistered = append(unregistered, "JSONConsumer")
+	}
 	if o.MultipartformConsumer == nil {
 		unregistered = append(unregistered, "MultipartformConsumer")
 	}
@@ -182,6 +194,9 @@ func (o *BackendAPI) Validate() error {
 	}
 	if o.PostPayedHandler == nil {
 		unregistered = append(unregistered, "PostPayedHandler")
+	}
+	if o.PostQiwiPayedHandler == nil {
+		unregistered = append(unregistered, "PostQiwiPayedHandler")
 	}
 	if o.PostTryagainHandler == nil {
 		unregistered = append(unregistered, "PostTryagainHandler")
@@ -215,6 +230,8 @@ func (o *BackendAPI) ConsumersFor(mediaTypes []string) map[string]runtime.Consum
 	result := make(map[string]runtime.Consumer, len(mediaTypes))
 	for _, mt := range mediaTypes {
 		switch mt {
+		case "application/json":
+			result["application/json"] = o.JSONConsumer
 		case "multipart/form-data":
 			result["multipart/form-data"] = o.MultipartformConsumer
 		case "application/x-www-form-urlencoded":
@@ -284,6 +301,10 @@ func (o *BackendAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/payed"] = NewPostPayed(o.context, o.PostPayedHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/qiwi-payed"] = NewPostQiwiPayed(o.context, o.PostQiwiPayedHandler)
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}

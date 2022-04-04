@@ -108,6 +108,36 @@ func init() {
         }
       }
     },
+    "/qiwi-payed": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/QiwiPayOpts"
+          },
+          {
+            "type": "string",
+            "description": "an authorization header",
+            "name": "X-Api-Signature-SHA256",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deployment scheduled.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
     "/tryagain": {
       "post": {
         "consumes": [
@@ -121,6 +151,73 @@ func init() {
             "description": "Server error."
           }
         }
+      }
+    }
+  },
+  "definitions": {
+    "QiwiPayOpts": {
+      "type": "object",
+      "properties": {
+        "bill": {
+          "type": "object",
+          "required": [
+            "billId"
+          ],
+          "properties": {
+            "amount": {
+              "type": "object",
+              "required": [
+                "value"
+              ],
+              "properties": {
+                "currency": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "billId": {
+              "type": "string"
+            },
+            "creationDateTime": {
+              "type": "string"
+            },
+            "expirationDateTime": {
+              "type": "string"
+            },
+            "siteId": {
+              "type": "string"
+            },
+            "status": {
+              "type": "object",
+              "required": [
+                "value"
+              ],
+              "properties": {
+                "datetime": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "parameters": {
+    "QiwiPayOpts": {
+      "name": "qiwiPayOpts",
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/QiwiPayOpts"
       }
     }
   }
@@ -216,6 +313,40 @@ func init() {
         }
       }
     },
+    "/qiwi-payed": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "qiwiPayOpts",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/QiwiPayOpts"
+            }
+          },
+          {
+            "type": "string",
+            "description": "an authorization header",
+            "name": "X-Api-Signature-SHA256",
+            "in": "header",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deployment scheduled.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Server error."
+          }
+        }
+      }
+    },
     "/tryagain": {
       "post": {
         "consumes": [
@@ -229,6 +360,149 @@ func init() {
             "description": "Server error."
           }
         }
+      }
+    }
+  },
+  "definitions": {
+    "QiwiPayOpts": {
+      "type": "object",
+      "properties": {
+        "bill": {
+          "type": "object",
+          "required": [
+            "billId"
+          ],
+          "properties": {
+            "amount": {
+              "type": "object",
+              "required": [
+                "value"
+              ],
+              "properties": {
+                "currency": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "billId": {
+              "type": "string"
+            },
+            "creationDateTime": {
+              "type": "string"
+            },
+            "expirationDateTime": {
+              "type": "string"
+            },
+            "siteId": {
+              "type": "string"
+            },
+            "status": {
+              "type": "object",
+              "required": [
+                "value"
+              ],
+              "properties": {
+                "datetime": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "QiwiPayOptsBill": {
+      "type": "object",
+      "required": [
+        "billId"
+      ],
+      "properties": {
+        "amount": {
+          "type": "object",
+          "required": [
+            "value"
+          ],
+          "properties": {
+            "currency": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          }
+        },
+        "billId": {
+          "type": "string"
+        },
+        "creationDateTime": {
+          "type": "string"
+        },
+        "expirationDateTime": {
+          "type": "string"
+        },
+        "siteId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "object",
+          "required": [
+            "value"
+          ],
+          "properties": {
+            "datetime": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "QiwiPayOptsBillAmount": {
+      "type": "object",
+      "required": [
+        "value"
+      ],
+      "properties": {
+        "currency": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "QiwiPayOptsBillStatus": {
+      "type": "object",
+      "required": [
+        "value"
+      ],
+      "properties": {
+        "datetime": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "parameters": {
+    "QiwiPayOpts": {
+      "name": "qiwiPayOpts",
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/QiwiPayOpts"
       }
     }
   }

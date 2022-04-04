@@ -27,6 +27,7 @@ func NewServer(host string, port int, ctrl controller.Controller, logger *zerolo
 	api.PostPayedHandler = handlers.NewPostPayedHandler(ctrl, logger, env)
 	api.PostNotifyHandler = handlers.NewNotifyHandler(ctrl, logger)
 	api.PostTryagainHandler = handlers.NewTryAgainHandler(ctrl, logger)
+	api.PostQiwiPayedHandler = handlers.NewPostQiwiPayedHandler(ctrl, logger, env)
 
 	api.ServerShutdown = func() {}
 

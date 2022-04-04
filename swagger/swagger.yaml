@@ -10,7 +10,7 @@ paths:
       consumes:
         -  application/x-www-form-urlencoded
       produces:
-       -  text/plain
+        -  text/plain
       responses:
         200:
           description: Deployment scheduled.
@@ -19,33 +19,33 @@ paths:
         500:
           description: Server error.
       parameters:
-      - in: formData
-        name: MERCHANT_ID          # <!--- form field name
-        type: integer
-      - in: formData
-        name: AMOUNT    # <!--- form field name
-        type: integer
-      - in: formData
-        name: intid # <!--- form field name
-        type: integer
-      - in: formData
-        name: MERCHANT_ORDER_ID # <!--- form field name
-        type: string
-      - in: formData
-        name: P_EMAIL # <!--- form field name
-        type: string
-      - in: formData
-        name: P_PHONE # <!--- form field name
-        type: string
-      - in: formData
-        name: CUR_ID # <!--- form field name
-        type: integer
-      - in: formData
-        name: payer_account # <!--- form field name
-        type: string
-      - in: formData
-        name: SIGN
-        type: string
+        - in: formData
+          name: MERCHANT_ID          # <!--- form field name
+          type: integer
+        - in: formData
+          name: AMOUNT    # <!--- form field name
+          type: integer
+        - in: formData
+          name: intid # <!--- form field name
+          type: integer
+        - in: formData
+          name: MERCHANT_ORDER_ID # <!--- form field name
+          type: string
+        - in: formData
+          name: P_EMAIL # <!--- form field name
+          type: string
+        - in: formData
+          name: P_PHONE # <!--- form field name
+          type: string
+        - in: formData
+          name: CUR_ID # <!--- form field name
+          type: integer
+        - in: formData
+          name: payer_account # <!--- form field name
+          type: string
+        - in: formData
+          name: SIGN
+          type: string
 
   /notify:
     post:
@@ -66,3 +66,74 @@ paths:
           description: Deployment scheduled.
         500:
           description: Server error.
+
+  /qiwi-payed:
+    post:
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Deployment scheduled.
+          schema:
+            type: string
+        500:
+          description: Server error.
+      parameters:
+        - $ref: "#/parameters/QiwiPayOpts"
+        - name: X-Api-Signature-SHA256
+          in: header
+          description: an authorization header
+          required: true
+          type: string
+
+
+
+parameters:
+  QiwiPayOpts:
+    name: qiwiPayOpts
+    in: body
+    schema:
+      $ref: "#/definitions/QiwiPayOpts"
+
+definitions:
+  QiwiPayOpts:
+    type: object
+    properties:
+      bill:
+        type: object
+        properties:
+          siteId:
+            type: string
+          billId:
+            type: string
+          amount:
+            type: object
+            properties:
+              value:
+                type: string
+              currency:
+                type: string
+            required:
+              - value
+          status:
+            type: object
+            properties:
+              value:
+                type: string
+              datetime:
+                type: string
+            required:
+              - value
+          creationDateTime:
+            type: string
+          expirationDateTime:
+            type: string
+        required:
+          - billId
+      version:
+        type: string
+
+
+
+
+
