@@ -46,7 +46,8 @@ type FreeKassa struct {
 }
 
 type qiwi struct {
-	QiwiSKey string `long:"qiwi-s-key" env:"QIWI_S_KEY" required:"true" default:"eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGFudF9zaXRlX3VpZCI6ImNsdXV6bC0wMCIsInVzZXJfaWQiOiI3OTk5MTE1NDM5NyIsInNlY3JldCI6ImU2ZDg5YzQ2NGY0ZDg0M2JkNmNjZmM0ZWIyNmI5NTQwZDc1ZTA4MTJjZTY1YjM2ZTUyNDAyOWFkMzcyMmU1NGYifX0="`
+	QiwiSKey      string `long:"qiwi-s-key" env:"QIWI_S_KEY" required:"true" default:"eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGFudF9zaXRlX3VpZCI6ImNsdXV6bC0wMCIsInVzZXJfaWQiOiI3OTk5MTE1NDM5NyIsInNlY3JldCI6ImU2ZDg5YzQ2NGY0ZDg0M2JkNmNjZmM0ZWIyNmI5NTQwZDc1ZTA4MTJjZTY1YjM2ZTUyNDAyOWFkMzcyMmU1NGYifX0="`
+	QiwiThemeCode string `long:"qiwi-siteid" env:"QIWI_SITE_ID" required:"true" default:"Arsenyi-E4-upDSr5Q"`
 }
 
 //}fTNqXgQ*KHssO{ key1

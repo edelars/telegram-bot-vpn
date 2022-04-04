@@ -4,6 +4,9 @@ import (
 	"backend-vpn/internal/dto"
 	"backend-vpn/pkg/config"
 	"bytes"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -38,7 +41,7 @@ func (k qiwi) GenerateUrlToPay(pd dto.PayData) (err error, url string) {
 	client := &http.Client{}
 
 	// marshal User to json
-	jsonData, err := json.Marshal(NewQiwiRequest(pd))
+	jsonData, err := json.Marshal(k.NewQiwiRequest(pd))
 	if err != nil {
 		return
 	}
@@ -71,17 +74,36 @@ func (k qiwi) GenerateUrlToPay(pd dto.PayData) (err error, url string) {
 	return err, respJson.PayUrl
 }
 
+func (k qiwi) SignVerify(pd dto.PayData, sign, status, qiwiSiteId string) bool {
+	//invoice_parameters = {amount.currency}|{amount.value}|{billId}|{siteId}|{status.value}
+
+	str := fmt.Sprintf("RUB|%d|%s|%s|%s", pd.Value, pd.Order, qiwiSiteId, status)
+
+	h := hmac.New(sha256.New, []byte(k.env.QiwiSKey))
+	h.Write([]byte(str))
+	sha := hex.EncodeToString(h.Sum(nil))
+
+	return sha == sign
+	//hash = HMAС(SHA256, invoice_parameters, secret_key)
+}
+
 type QiwiRequest struct {
 	QiwiRequestAmount  `json:"amount"`
 	Comment            string `json:"comment"`
 	ExpirationDateTime string `json:"expirationDateTime"`
+	QiwiCustomFileds   `json:"customFields"`
 }
+
 type QiwiRequestAmount struct {
 	Currency string  `json:"currency"`
 	Value    float32 `json:"value"`
 }
 
-func NewQiwiRequest(pd dto.PayData) *QiwiRequest {
+type QiwiCustomFileds struct {
+	ThemeCode string `json:"currency"`
+}
+
+func (k qiwi) NewQiwiRequest(pd dto.PayData) *QiwiRequest {
 	return &QiwiRequest{
 		QiwiRequestAmount: QiwiRequestAmount{
 			Currency: currency,
@@ -89,6 +111,9 @@ func NewQiwiRequest(pd dto.PayData) *QiwiRequest {
 		},
 		ExpirationDateTime: time.Now().Add(1 * time.Hour).Format("2006-01-02T15:04:05Z07:00"),
 		Comment:            pd.Order,
+		QiwiCustomFileds: QiwiCustomFileds{
+			ThemeCode: k.env.QiwiThemeCode,
+		},
 	}
 }
 
@@ -96,4 +121,5 @@ type qiwiResponse struct {
 	PayUrl      string `json:"payUrl"`
 	ErrorCode   string `json:"errorCode"`
 	Description string `json:"description"`
+	BillId      string `json:"billId"`
 }
