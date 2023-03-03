@@ -2,12 +2,12 @@ package config
 
 type Environment struct {
 	LogLevel string `long:"log-level" env:"LOG_LEVEL" required:"false" default:"debug"`
-	TgToken  string `long:"tg-token" env:"TG_TOKEN" required:"false" default:"5284896259:AAHOGV3H_46GvzjXEFEzVIf3hXnnw3aNxFo"`
+	TgToken  string `long:"tg-token" env:"TG_TOKEN" required:"false" default:"52"`
 	MysqlEnvironment
 	BussinesLogic
-	Admins       string `long:"admins" env:"ADMINS" required:"true" default:"221953723"`
-	OurServersIP string `long:"servers-sp" env:"SERVERS_IP" required:"true" default:"65.108.96.44"`
-	Psk          string `long:"psk" env:"PSK" required:"true" default:"m9z6v3"`
+	Admins       string `long:"admins" env:"ADMINS" required:"true" default:""`
+	OurServersIP string `long:"servers-sp" env:"SERVERS_IP" required:"true" default:""`
+	Psk          string `long:"psk" env:"PSK" required:"true" default:""`
 	HttpPort     int    `long:"http-port" env:"HTTP_PORT" required:"true" default:"8080"`
 	FreeKassa
 	qiwi
@@ -41,14 +41,13 @@ type BussinesLogic struct {
 type FreeKassa struct {
 	FKMName   string `long:"fk-m-name" env:"FK_M_NAME" required:"true" default:"OrionVPN"`
 	FKId      string `long:"fk-m-id" env:"FK_M_ID" required:"true" default:"14684"`
-	FKSecKey1 string `long:"fk-s-key1" env:"FK_S_KEY1" required:"true" default:"}fTNqXgQ*KHssO{"`
-	FKSecKey2 string `long:"fk-s-key2" env:"FK_S_KEY2" required:"true" default:"?RL[Jz4r(P,*H_{"`
+	FKSecKey1 string `long:"fk-s-key1" env:"FK_S_KEY1" required:"true" default:"}fKHssO{"`
+	FKSecKey2 string `long:"fk-s-key2" env:"FK_S_KEY2" required:"true" default:"?RH_{"`
 }
 
 type qiwi struct {
-	QiwiSKey      string `long:"qiwi-s-key" env:"QIWI_S_KEY" required:"true" default:"eyJ2ZXJzaW9uIjoiUDJQIiwiZGF0YSI6eyJwYXlpbl9tZXJjaGFudF9zaXRlX3VpZCI6ImNsdXV6bC0wMCIsInVzZXJfaWQiOiI3OTk5MTE1NDM5NyIsInNlY3JldCI6ImU2ZDg5YzQ2NGY0ZDg0M2JkNmNjZmM0ZWIyNmI5NTQwZDc1ZTA4MTJjZTY1YjM2ZTUyNDAyOWFkMzcyMmU1NGYifX0="`
-	QiwiThemeCode string `long:"qiwi-siteid" env:"QIWI_SITE_ID" required:"true" default:"Arsenyi-E4-upDSr5Q"`
+	QiwiSKey      string `long:"qiwi-s-key" env:"QIWI_S_KEY" required:"true" default:"="`
+	QiwiThemeCode string `long:"qiwi-siteid" env:"QIWI_SITE_ID" required:"true" default:""`
 }
 
-//}fTNqXgQ*KHssO{ key1
-//	?RL[Jz4r(P,*H_{ key2
+
